@@ -5,12 +5,18 @@ api-version: 1.17
 
 commands:
    init:
-      description: Command to initialize the game.
+      description: CubeAssemble command to initialize the game.
       usage: /<command>
       permission: op
       permission-message: You don't have <permission>
    clean:
-      description: Command to clean the game.
+      description: CubeAssemble command to clean the game.
       usage: /<command>
       permission: op
       permission-message: You don't have <permission>
+   setup:
+       description: CubeAssemble command to get setup mode
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+       
