@@ -1,14 +1,16 @@
 name: CubeAssemble
-main: com.dorianmercier.cubeassemble.main
-version: 2.0
-
-name: Basic
 main: com.dorianmercier.cubeassemble.common.main
-version: 1.0
-author: <your IGN or name>
+version: 2.0
+api-version: 1.17
+
 commands:
-   basic:
-      description: This is a demo command.
-      usage: /<command> [player]
-      permission: <plugin name>.basic
+   init:
+      description: Command to initialize the game.
+      usage: /<command>
+      permission: op
+      permission-message: You don't have <permission>
+   clean:
+      description: Command to clean the game.
+      usage: /<command>
+      permission: op
       permission-message: You don't have <permission>
