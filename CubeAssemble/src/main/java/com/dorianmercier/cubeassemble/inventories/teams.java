@@ -10,29 +10,27 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.Plugin;
-
 /**
  *
  * @author doria
  */
-public class setup{
-    public static final Inventory inv = Bukkit.createInventory(null, 9, "Configuration de la partie");
+public class teams {
+    public static final Inventory inv = Bukkit.createInventory(null, 9, "Choix des équipes");
 
-    public setup() {
+    public teams() {
         // Put the items into the inventory
         initializeItems();
     }
 
     // You can call this whenever you want to put the items in
     public static void initializeItems() {
-        createDisplay(Material.RED_BANNER, 1, inv, 3, "Équipes", "Configuration des équipes");
-        createDisplay(Material.GRASS_BLOCK, 1, inv, 5, "Blocs", "Configuration des blocs");
+        //Placing items in the inventory
+        createDisplay(Material.BLUE_BANNER, 1, inv, 0, "Bleu","");
+        createDisplay(Material.RED_BANNER, 1, inv, 1, "Rouge","");
     }
 
     // You can open the inventory with this
     public static void openInventory(final HumanEntity ent) {
         ent.openInventory(inv);
-        ent.sendMessage("Configuration de la partie");
     }
 }
