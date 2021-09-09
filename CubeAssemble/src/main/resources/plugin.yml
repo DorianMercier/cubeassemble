@@ -19,4 +19,9 @@ commands:
        usage: /<command>
        permission: op
        permission-message: You don't have <permission>
-       
+   test:
+       description: CubeAssemble test command
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+     

@@ -4,6 +4,7 @@ import com.dorianmercier.cubeassemble.inventories.setup;
 import com.dorianmercier.cubeassemble.structures.spawn;
 import org.bukkit.Bukkit;
 import static org.bukkit.Bukkit.getLogger;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -11,6 +12,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
 public class cubeAssembleCommandExecutor implements CommandExecutor {
     
@@ -36,6 +40,8 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
                 log.warning("Failed to set world spawn");
             }
             
+            main.host.addPlayer((Player) sender);
+            
             //Building the spawn
             return spawn.build(true);
         }
@@ -53,6 +59,15 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             log.info(sender.getName() + " requested setup mod");
             Player player = (Player) sender;
             setup.openInventory(player);
+            
+            return true;
+        }
+        
+        if (command.getName().equalsIgnoreCase("test")) {
+            
+            sender.sendMessage("Nom de la team rouge : " + main.red.getName());
+            main.red.addEntry(sender.getName());
+            sender.sendMessage("Liste de la team rouge : " + main.red.getEntries().toString());
             
             return true;
         }

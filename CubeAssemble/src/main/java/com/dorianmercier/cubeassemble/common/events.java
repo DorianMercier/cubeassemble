@@ -8,6 +8,7 @@ package com.dorianmercier.cubeassemble.common;
 import com.dorianmercier.cubeassemble.inventories.setup;
 import com.dorianmercier.cubeassemble.inventories.setup_teams;
 import com.dorianmercier.cubeassemble.inventories.teams;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -77,11 +78,15 @@ public class events implements Listener{
             else if(clickedItem.getType().equals(Material.ARROW)) {
                 setup.openInventory(player);
             }
+            if(inv.equals(teams.inv)) {
+                //if(clickedItem.getType().equals(Material))
+            }
             if(resetTeams) {
+                teamManager.resetTeams();
                 teams.inv.clear();
                 new teams();
-                Material[] orderedTeams = {Material.GREEN_BANNER, Material.YELLOW_BANNER, Material.ORANGE_BANNER, Material.PINK_BANNER, Material.BROWN_BANNER, Material.GRAY_BANNER, Material.CYAN_BANNER};
-                String[] teamsColors = {"Vert", "Jaune", "Orange", "Rose", "Marron", "Gris", "Cyan"};
+                Material[] orderedTeams = {Material.GREEN_BANNER, Material.YELLOW_BANNER, Material.ORANGE_BANNER, Material.PINK_BANNER, Material.BLACK_BANNER, Material.GRAY_BANNER, Material.CYAN_BANNER};
+                String[] teamsColors = {"Vert", "Jaune", "Orange", "Rose", "Noir", "Gris", "Cyan"};
                 for(int k = 3; k <= numberTeams; k++) {
                     teams.inv.setItem(k-1, new ItemStack(orderedTeams[k-3], 1));
                     ItemStack item = teams.inv.getItem(k-1);
@@ -98,9 +103,36 @@ public class events implements Listener{
             e.setCancelled(true);
 
             // Using slots click is a best option for your inventory click's
-            if (clickedItem.getType().equals(Material.BLUE_BANNER)) {
-            }
-            else if(clickedItem.getType().equals(Material.RED_BANNER)) {
+            switch (clickedItem.getType()) {
+                case BLUE_BANNER:
+                    teamManager.addPlayer(main.blue, player);
+                    break;
+                case RED_BANNER:
+                    teamManager.addPlayer(main.red, player);
+                    break;
+                case GREEN_BANNER:
+                    teamManager.addPlayer(main.green, player);
+                    break;
+                case YELLOW_BANNER:
+                    teamManager.addPlayer(main.yellow, player);
+                    break;
+                case ORANGE_BANNER:
+                    teamManager.addPlayer(main.orange, player);
+                    break;
+                case PINK_BANNER:
+                    teamManager.addPlayer(main.pink, player);
+                    break;
+                case BLACK_BANNER:
+                    teamManager.addPlayer(main.black, player);
+                    break;
+                case GRAY_BANNER:
+                    teamManager.addPlayer(main.gray, player);
+                    break;
+                case CYAN_BANNER:
+                    teamManager.addPlayer(main.cyan, player);
+                    break;
+                default:
+                    break;
             }
             return;
         }
@@ -145,4 +177,6 @@ public class events implements Listener{
             teams.openInventory(player);
         }
     }
+    
+   
 }
