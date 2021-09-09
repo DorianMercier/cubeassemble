@@ -8,6 +8,7 @@ package com.dorianmercier.cubeassemble.common;
 import com.dorianmercier.cubeassemble.inventories.setup;
 import com.dorianmercier.cubeassemble.inventories.setup_teams;
 import com.dorianmercier.cubeassemble.inventories.teams;
+import com.dorianmercier.cubeassemble.inventories.tools;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -77,10 +78,15 @@ public class events implements Listener{
             }
             else if(clickedItem.getType().equals(Material.ARROW)) {
                 setup.openInventory(player);
+            }else if(clickedItem.getType().equals(Material.ICE)) {
+                gameConfig.team_freezed = true;
+                tools.createDisplay(Material.LIME_TERRACOTTA, 1, inv, 8, "Teams vérouillées", "");
+            }else if(clickedItem.getType().equals(Material.LIME_TERRACOTTA)) {
+                gameConfig.team_freezed = false;
+                tools.createDisplay(Material.ICE, 1, inv, 8, "Vérouiller les teams", "");
             }
-            if(inv.equals(teams.inv)) {
-                //if(clickedItem.getType().equals(Material))
-            }
+            
+            
             if(resetTeams) {
                 teamManager.resetTeams();
                 teams.inv.clear();
@@ -134,6 +140,7 @@ public class events implements Listener{
                 default:
                     break;
             }
+            player.closeInventory();
             return;
         }
     }
@@ -174,7 +181,7 @@ public class events implements Listener{
         Player player = e.getPlayer();
         if(player.getInventory().getItemInMainHand().equals(new ItemStack(Material.WHITE_BANNER))) {
             e.setCancelled(true);
-            teams.openInventory(player);
+            if(!gameConfig.team_freezed) teams.openInventory(player);
         }
     }
     

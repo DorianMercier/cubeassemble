@@ -38,6 +38,7 @@ public class setup_teams{
         createDisplay(Material.WHITE_BANNER, 2, inv, 4, "2", "Nombre d'équipes");
         createDisplay(Material.RED_BANNER, 1, inv, 5, "-1", "Supprimer une équipe");
         createDisplay(Material.ARROW, 1, inv, 0, "Retour","");
+        createDisplay(Material.ICE, 1, inv, 8, "Vérouiller les teams","");
         
         //Creating banner style for plus
         ItemStack Banner = inv.getItem(3);

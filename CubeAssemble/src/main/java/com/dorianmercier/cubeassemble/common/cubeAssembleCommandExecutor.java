@@ -53,7 +53,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             return spawn.build(false);
         }
         
-        if (command.getName().equalsIgnoreCase("setup")) {
+        if(command.getName().equalsIgnoreCase("setup")) {
             
             if(args.length != 0) return false;
             log.info(sender.getName() + " requested setup mod");
@@ -62,8 +62,37 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             
             return true;
         }
-        
-        if (command.getName().equalsIgnoreCase("test")) {
+        if(command.getName().equalsIgnoreCase("teammod")) {
+            if(args.length < 2) return false;
+            Team team;
+            try {
+                    team = main.board.getTeam(args[1]);
+                }
+            catch(Exception e) {
+                sender.sendMessage("La team \"" + args[1] + "\" n'existe pas.");
+                return false;
+            }
+            switch(args[0]) {
+                case "list":
+                    sender.sendMessage("Liste des joueurs de la team \"" + args[1] + "\" :");
+                    sender.sendMessage(team.getEntries().toString());
+                    break;
+                case "join":
+                    if(args.length < 3) return false;
+                    try {
+                        teamManager.addPlayer(team, Bukkit.getPlayer(args[2]));
+                        sender.sendMessage("Vous avez placé le joueur " + args[2] + " dans la team " + args[1]);
+                    }
+                    catch(Exception e) {
+                        sender.sendMessage("Le joueur " + args[2] + " n'existe pas");
+                        return false;
+                    }
+                    
+                    break;
+            }
+            return true;
+        }
+        if(command.getName().equalsIgnoreCase("test")) {
             
             sender.sendMessage("Nom de la team rouge : " + main.red.getName());
             main.red.addEntry(sender.getName());
