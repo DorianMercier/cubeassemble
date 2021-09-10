@@ -5,17 +5,19 @@
  */
 package com.dorianmercier.cubeassemble.common;
 
+import com.dorianmercier.cubeassemble.inventories.blockConfigInventory;
+import com.dorianmercier.cubeassemble.inventories.blocksInventory;
 import com.dorianmercier.cubeassemble.inventories.setup;
 import com.dorianmercier.cubeassemble.inventories.setup_teams;
 import com.dorianmercier.cubeassemble.inventories.teams;
 import com.dorianmercier.cubeassemble.inventories.tools;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -40,7 +42,7 @@ public class events implements Listener{
         Player player = (Player) e.getWhoClicked();
         /*TODO Modify if condition later to allow inventory interations in the blocks room
           TODO Add an admin tag in order to make possible to open the menue in adventure mode*/
-        if(player.getGameMode().equals(GameMode.ADVENTURE)) {
+        if(!gameConfig.hostList.contains(player.getName())) {
             //Freezing inventory for players in hub
             e.setCancelled(true);
             return;
@@ -55,7 +57,7 @@ public class events implements Listener{
             e.setCancelled(true);
 
             if (clickedItem.getType().equals(Material.GRASS_BLOCK)) {
-                player.sendMessage("Grass block");
+                blocksInventory.openInventory(player);
             }
             else if(clickedItem.getType().equals(Material.RED_BANNER)) {
                 setup_teams.openInventory(player);
@@ -88,6 +90,7 @@ public class events implements Listener{
             
             
             if(resetTeams) {
+                gameConfig.numberTeams = numberTeams;
                 teamManager.resetTeams();
                 teams.inv.clear();
                 new teams();
@@ -185,5 +188,15 @@ public class events implements Listener{
         }
     }
     
-   
+    @EventHandler
+    public static void onCloseInventory(InventoryCloseEvent e) {
+        if(e.getInventory().equals(blocksInventory.inv)) {
+            gameConfig.updateBlocksConfig(e.getInventory());
+            int nbBlocks = gameConfig.blocksConfig.size();
+            int indexFirst;
+            for(indexFirst=0; indexFirst<nbBlocks; indexFirst+=9) {
+                gameConfig.invBlockConfig.add(new blockConfigInventory());
+            }
+        }
+    }
 }

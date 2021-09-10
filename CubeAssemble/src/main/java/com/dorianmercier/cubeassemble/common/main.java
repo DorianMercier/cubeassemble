@@ -2,11 +2,7 @@ package com.dorianmercier.cubeassemble.common;
 
 import com.dorianmercier.cubeassemble.inventories.*;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -26,7 +22,7 @@ public final class main extends JavaPlugin {
     public static Team black;
     public static Team gray;
     public static Team cyan;
-    public static Team host = board.registerNewTeam("Host");
+    public static Team host = board.registerNewTeam("host");
     
 
     @Override
@@ -42,6 +38,7 @@ public final class main extends JavaPlugin {
         new setup();
         new setup_teams();
         new teams();
+        new blocksInventory();
         
         //Initalizing eventsHandlers
         new events(this);

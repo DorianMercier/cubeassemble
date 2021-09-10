@@ -3,17 +3,11 @@ package com.dorianmercier.cubeassemble.common;
 import com.dorianmercier.cubeassemble.inventories.setup;
 import com.dorianmercier.cubeassemble.structures.spawn;
 import org.bukkit.Bukkit;
-import static org.bukkit.Bukkit.getLogger;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 public class cubeAssembleCommandExecutor implements CommandExecutor {
@@ -30,6 +24,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
         
         if (command.getName().equalsIgnoreCase("init")) {
             log.info("Initialization of the game");
+
             if(args.length != 0) return false;
             
             world = Bukkit.getWorld("world");
@@ -40,7 +35,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
                 log.warning("Failed to set world spawn");
             }
             
-            main.host.addPlayer((Player) sender);
+            gameConfig.hostList.add(sender.getName());
             
             //Building the spawn
             return spawn.build(true);
@@ -65,10 +60,8 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
         if(command.getName().equalsIgnoreCase("teammod")) {
             if(args.length < 2) return false;
             Team team;
-            try {
-                    team = main.board.getTeam(args[1]);
-                }
-            catch(Exception e) {
+                team = main.board.getTeam(args[1]);
+            if(team == null) {
                 sender.sendMessage("La team \"" + args[1] + "\" n'existe pas.");
                 return false;
             }

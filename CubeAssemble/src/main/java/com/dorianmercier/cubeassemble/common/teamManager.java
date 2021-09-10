@@ -6,6 +6,7 @@
 package com.dorianmercier.cubeassemble.common;
 
 import static com.dorianmercier.cubeassemble.common.main.board;
+import java.util.ArrayList;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -35,6 +36,18 @@ public class teamManager {
         catch(NullPointerException e) {
             //Nothing to do. Teams are just not initialized. Not a problem.
         }
+        
+        gameConfig.listTeams.clear();
+        
+        gameConfig.listTeams.put("Bleu", new ArrayList<>());
+        gameConfig.listTeams.put("Rouge", new ArrayList<>());
+        gameConfig.listTeams.put("Vert", new ArrayList<>());
+        gameConfig.listTeams.put("Jaune", new ArrayList<>());
+        gameConfig.listTeams.put("Orange", new ArrayList<>());
+        gameConfig.listTeams.put("Rose", new ArrayList<>());
+        gameConfig.listTeams.put("Noir", new ArrayList<>());
+        gameConfig.listTeams.put("Gris", new ArrayList<>());
+        gameConfig.listTeams.put("Cyan", new ArrayList<>());
 
         main.blue = board.registerNewTeam("Bleu");
         main.red = board.registerNewTeam("Rouge");
@@ -61,12 +74,16 @@ public class teamManager {
         public static void addPlayer(Team team, Player player) {
             setPlayerColor(player, team.getColor());
             team.addEntry(player.getName());
+            for(ArrayList<String> list : gameConfig.listTeams.values()) {
+                //Removing player for all team lists
+                list.remove(player.getName());
+            }
+            gameConfig.listTeams.get(team.getName()).add(player.getName());
         }
 
         public static void setPlayerColor(Player player, ChatColor color) {
            String playerName = player.getName();
            player.setDisplayName(color + playerName + ChatColor.RESET);
            player.setPlayerListName(color + playerName);
-           log.info("On affiche le joueur " + player.getName() + " de la couleur " + color);
     }
 }
