@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,6 +20,9 @@ import org.bukkit.inventory.ItemStack;
  * @author doria
  */
 public class gameConfig {
+    
+    public static final String version = "v2.0";
+    
     public static boolean team_freezed = false;
     public static ArrayList<String> hostList = new ArrayList<String>();
     public static int numberTeams;
@@ -26,6 +30,7 @@ public class gameConfig {
     public static LinkedHashMap<Material, Integer> blocksConfig = new LinkedHashMap<>();
     public static ArrayList<blocksInventory> invBlocks = new ArrayList<>();
     public static ArrayList<blockConfigInventory> invBlockConfig = new ArrayList<>();
+    public static HashMap<Player, Integer> currentConfigPage = new HashMap<>();
     
     static {
         listTeams.put("Bleu", new ArrayList<>());
@@ -37,6 +42,8 @@ public class gameConfig {
         listTeams.put("Noir", new ArrayList<>());
         listTeams.put("Gris", new ArrayList<>());
         listTeams.put("Cyan", new ArrayList<>());
+        
+        invBlockConfig.add(new blockConfigInventory());
     }
     
     public static boolean addBlock(Material material) {
@@ -55,6 +62,7 @@ public class gameConfig {
     }
     
     public static void updateBlocksConfig(Inventory bInv) {
+        blockConfigInventory.nbInventories = 0;
         LinkedHashMap<Material, Integer> blocksConfigUpdated = new LinkedHashMap<>();
         Material currMaterial;
         ItemStack itemstack;
@@ -71,5 +79,12 @@ public class gameConfig {
             }
         }
         blocksConfig = blocksConfigUpdated;
+    }
+    
+    public static boolean arrayContainsInventory(Inventory inventory) {
+        for(blockConfigInventory invb : invBlockConfig) {
+            if(invb.inv.equals(inventory)) return true;
+        }
+        return false;
     }
 }

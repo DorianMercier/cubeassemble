@@ -34,9 +34,6 @@ public final class spawn {
             log.info("Cleaning the spawn");
             materialFloor = Material.AIR;
             materialWall = Material.AIR;
-            //Deleting buttons first
-            world.getBlockAt(0,252,10).setType(Material.AIR);
-            world.getBlockAt(0,252,-10).setType(Material.AIR);
         }
         int x, y, z;
         log.info("Processing the floor");
@@ -76,23 +73,6 @@ public final class spawn {
             world.getBlockAt(-11,y,11).setType(materialWall,true);
             world.getBlockAt(11,y,11).setType(materialWall,true);
         }
-        log.info("Processing colored blocks and buttons");
-        if(value) {
-            //Placing color blocks, buttons and commandBlocks
-            //Red
-            world.getBlockAt(0,252,11).setType(Material.RED_CONCRETE,true);
-            world.getBlockAt(0,252,10).setType(Material.STONE_BUTTON,true);
-            
-            Block button = world.getBlockAt(0,252,10);
-            button.setBlockData(Material.STONE_BUTTON.createBlockData("[facing=north]"));
-            //Blue
-            world.getBlockAt(0,252,-11).setType(Material.BLUE_CONCRETE,true);
-            world.getBlockAt(0,252,-10).setType(Material.STONE_BUTTON,true);
-            
-            button = world.getBlockAt(0,252,-10);
-            button.setBlockData(Material.STONE_BUTTON.createBlockData("[facing=south]"));
-        }
-       
         return true;
     }
 }

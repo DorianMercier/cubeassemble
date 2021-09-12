@@ -6,11 +6,15 @@
 package com.dorianmercier.cubeassemble.common;
 
 import com.dorianmercier.cubeassemble.inventories.blockConfigInventory;
+import com.dorianmercier.cubeassemble.inventories.blockMenue;
 import com.dorianmercier.cubeassemble.inventories.blocksInventory;
 import com.dorianmercier.cubeassemble.inventories.setup;
 import com.dorianmercier.cubeassemble.inventories.setup_teams;
 import com.dorianmercier.cubeassemble.inventories.teams;
 import com.dorianmercier.cubeassemble.inventories.tools;
+import static com.dorianmercier.cubeassemble.inventories.tools.createDisplay;
+import static java.lang.Integer.max;
+import static java.lang.Integer.min;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -57,7 +61,7 @@ public class events implements Listener{
             e.setCancelled(true);
 
             if (clickedItem.getType().equals(Material.GRASS_BLOCK)) {
-                blocksInventory.openInventory(player);
+                blockMenue.openInventory(player);
             }
             else if(clickedItem.getType().equals(Material.RED_BANNER)) {
                 setup_teams.openInventory(player);
@@ -82,14 +86,17 @@ public class events implements Listener{
                 setup.openInventory(player);
             }else if(clickedItem.getType().equals(Material.ICE)) {
                 gameConfig.team_freezed = true;
-                tools.createDisplay(Material.LIME_TERRACOTTA, 1, inv, 8, "Teams vérouillées", "");
+                log.info("The player " +  player.getName() + " freezed the teams");
+                tools.createDisplay(Material.LIME_TERRACOTTA, 1, inv, 8, "Dévérouiller les teams", "");
             }else if(clickedItem.getType().equals(Material.LIME_TERRACOTTA)) {
                 gameConfig.team_freezed = false;
                 tools.createDisplay(Material.ICE, 1, inv, 8, "Vérouiller les teams", "");
+                log.info("The player " +  player.getName() + " unfreezed the teams");
             }
             
             
             if(resetTeams) {
+                log.info("The player " + player.getName() + " updated teams number to " + numberTeams);
                 gameConfig.numberTeams = numberTeams;
                 teamManager.resetTeams();
                 teams.inv.clear();
@@ -146,6 +153,63 @@ public class events implements Listener{
             player.closeInventory();
             return;
         }
+        
+        if(inv.equals(blockMenue.inv)) {
+            e.setCancelled(true);
+            switch (clickedItem.getType()) {
+                case STONE:
+                    blocksInventory.openInventory(player);
+                    break;
+                case GOLD_INGOT:
+                    gameConfig.invBlockConfig.get(0).openInventory(player);
+                    gameConfig.currentConfigPage.put(player, 0);
+                    break;
+                case ARROW:
+                    blockMenue.openInventory(player);
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
+        if(gameConfig.arrayContainsInventory(inv)) {
+            e.setCancelled(true);
+            int k = e.getSlot();
+            int nbPoints;
+            if(0 <= k && k <= 8) {
+                Material material = inv.getItem(k + 18).getType();
+                nbPoints = gameConfig.getPoints(material);
+                gameConfig.setPoints(material, ++nbPoints);
+                createDisplay(Material.GOLD_NUGGET, min(nbPoints, 64), inv, k + 27, "" + nbPoints, "");
+                log.info("The player " + player.getName() + " updated the points for " + material + " to " + nbPoints);
+                return;
+            }
+            if(9 <= k && k <= 17) {
+                Material material = inv.getItem(k + 9).getType();
+                nbPoints = max(gameConfig.getPoints(material) - 1, 0);
+                gameConfig.setPoints(material, nbPoints);
+                createDisplay(Material.GOLD_NUGGET, min(nbPoints, 64), inv, k + 18, "" + nbPoints, "");
+                log.info("The player " + player.getName() + " updated the points for " + material + " to " + nbPoints);
+                return;
+            }
+            if(k==45) {
+                Integer currentPage = gameConfig.currentConfigPage.get(player);
+                if(currentPage == null || currentPage == 0) {
+                    blockMenue.openInventory(player);
+                }
+                else {
+                    gameConfig.invBlockConfig.get(currentPage - 1).openInventory(player);
+                    gameConfig.currentConfigPage.put(player, currentPage - 1);
+                }
+                return;
+            }
+            if(k==53) {
+                Integer currentPage = gameConfig.currentConfigPage.get(player);
+                gameConfig.invBlockConfig.get(currentPage + 1).openInventory(player);
+                gameConfig.currentConfigPage.put(player, currentPage + 1);
+                return;
+            }
+        }
     }
     
     @EventHandler
@@ -191,9 +255,12 @@ public class events implements Listener{
     @EventHandler
     public static void onCloseInventory(InventoryCloseEvent e) {
         if(e.getInventory().equals(blocksInventory.inv)) {
+            log.info("The player " + e.getPlayer().getName() + " updated the required blocks");
             gameConfig.updateBlocksConfig(e.getInventory());
             int nbBlocks = gameConfig.blocksConfig.size();
             int indexFirst;
+            gameConfig.invBlockConfig.clear();
+            blockConfigInventory.nbInventories = 0;
             for(indexFirst=0; indexFirst<nbBlocks; indexFirst+=9) {
                 gameConfig.invBlockConfig.add(new blockConfigInventory());
             }

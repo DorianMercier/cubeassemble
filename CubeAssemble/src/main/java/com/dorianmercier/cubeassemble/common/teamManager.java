@@ -72,6 +72,7 @@ public class teamManager {
         }
 
         public static void addPlayer(Team team, Player player) {
+            log.info("The player " + player.getName() + " joined the team " + team.getName());
             setPlayerColor(player, team.getColor());
             team.addEntry(player.getName());
             for(ArrayList<String> list : gameConfig.listTeams.values()) {

@@ -14,14 +14,14 @@ import static org.bukkit.Bukkit.getLogger;
  */
 public class log {
     public static void info(String message) {
-        getLogger().log(Level.INFO, "[CubeAssemble] {0}", message);
+        getLogger().log(Level.INFO, "[CubeAssemble " + gameConfig.version + "] {0}", message);
     }
     
     public static void error(String message) {
-        getLogger().log(Level.SEVERE, "[CubeAssemble] {0}", message);
+        getLogger().log(Level.SEVERE, "[CubeAssemble " + gameConfig.version + "] {0}", message);
     }
     
     public static void warning(String message) {
-        getLogger().log(Level.WARNING, "[CubeAssemble] {0}", message);
+        getLogger().log(Level.WARNING, "[CubeAssemble " + gameConfig.version + "] {0}", message);
     }
 }
