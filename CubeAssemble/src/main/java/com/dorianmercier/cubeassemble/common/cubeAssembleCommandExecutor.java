@@ -36,6 +36,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             }
             
             gameConfig.hostList.add(sender.getName());
+            dataBase.addhost((Player) sender);
             
             //Building the spawn
             return spawn.build(true);

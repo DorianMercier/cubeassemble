@@ -27,8 +27,6 @@ public class gameConfig {
     public static boolean team_freezed = false;
     //List of players authorized to perform config commands
     public static ArrayList<String> hostList = new ArrayList<String>();
-    //Total number of teams
-    public static int numberTeams;
     //List of teams and players
     public static final HashMap<String, ArrayList<String>> listTeams = new HashMap<>();
     //All blocks needed for the game and their points are referenced here
@@ -55,12 +53,17 @@ public class gameConfig {
     }
     
     public static boolean addBlock(Material material) {
-        return blocksConfig.putIfAbsent(material, 0) != null;
+        if(blocksConfig.putIfAbsent(material, 0)==null) return false;
+        else {
+            dataBase.addBlock(material, 0);
+            return true;
+        }
     }
     
     public static boolean setPoints(Material material, int points) {
         if(!blocksConfig.containsKey(material)) return false;
         blocksConfig.put(material, points);
+        dataBase.setPoints(material, points);
         return true;
     }
     
@@ -72,6 +75,7 @@ public class gameConfig {
     public static void updateBlocksConfig(Inventory bInv) {
         blockConfigInventory.nbInventories = 0;
         LinkedHashMap<Material, Integer> blocksConfigUpdated = new LinkedHashMap<>();
+        dataBase.voidBlocks();
         Material currMaterial;
         ItemStack itemstack;
         int currPoint;
@@ -84,6 +88,7 @@ public class gameConfig {
                 }
                 else currPoint = 0;
                 blocksConfigUpdated.put(currMaterial, currPoint);
+                dataBase.addBlock(currMaterial, currPoint);
             }
         }
         blocksConfig = blocksConfigUpdated;
@@ -94,5 +99,9 @@ public class gameConfig {
             if(invb.inv.equals(inventory)) return true;
         }
         return false;
+    }
+    
+    public static void loadConfig() {
+        
     }
 }

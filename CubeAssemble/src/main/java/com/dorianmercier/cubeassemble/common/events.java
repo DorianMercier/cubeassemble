@@ -46,15 +46,58 @@ public class events implements Listener{
         Player player = (Player) e.getWhoClicked();
         /*TODO Modify if condition later to allow inventory interations in the blocks room
           TODO Add an admin tag in order to make possible to open the menue in adventure mode*/
+        
+        // verify current item is not null
+        final ItemStack clickedItem = e.getCurrentItem();
+        Inventory inv = e.getInventory();
+        if (clickedItem == null || clickedItem.getType().isAir()) return;
+        
+        //Choice team menue
+        if(inv.equals(teams.inv)) {
+            e.setCancelled(true);
+
+            // Using slots click is a best option for your inventory click's
+            switch (clickedItem.getType()) {
+                case BLUE_BANNER:
+                    teamManager.addPlayer(main.blue, player);
+                    break;
+                case RED_BANNER:
+                    teamManager.addPlayer(main.red, player);
+                    break;
+                case GREEN_BANNER:
+                    teamManager.addPlayer(main.green, player);
+                    break;
+                case YELLOW_BANNER:
+                    teamManager.addPlayer(main.yellow, player);
+                    break;
+                case ORANGE_BANNER:
+                    teamManager.addPlayer(main.orange, player);
+                    break;
+                case PINK_BANNER:
+                    teamManager.addPlayer(main.pink, player);
+                    break;
+                case BLACK_BANNER:
+                    teamManager.addPlayer(main.black, player);
+                    break;
+                case GRAY_BANNER:
+                    teamManager.addPlayer(main.gray, player);
+                    break;
+                case CYAN_BANNER:
+                    teamManager.addPlayer(main.cyan, player);
+                    break;
+                default:
+                    break;
+            }
+            player.closeInventory();
+            return;
+        }
+        
         if(!gameConfig.hostList.contains(player.getName())) {
             //Freezing inventory for players in hub
             e.setCancelled(true);
             return;
         }
-        // verify current item is not null
-        final ItemStack clickedItem = e.getCurrentItem();
-        Inventory inv = e.getInventory();
-        if (clickedItem == null || clickedItem.getType().isAir()) return;
+        
         
         //Setup menue
         if(inv.equals(setup.inv)) {
@@ -97,7 +140,6 @@ public class events implements Listener{
             
             if(resetTeams) {
                 log.info("The player " + player.getName() + " updated teams number to " + numberTeams);
-                gameConfig.numberTeams = numberTeams;
                 teamManager.resetTeams();
                 teams.inv.clear();
                 new teams();
@@ -114,45 +156,7 @@ public class events implements Listener{
             return;
         }
         
-        //Choice team menue
-        if(inv.equals(teams.inv)) {
-            e.setCancelled(true);
-
-            // Using slots click is a best option for your inventory click's
-            switch (clickedItem.getType()) {
-                case BLUE_BANNER:
-                    teamManager.addPlayer(main.blue, player);
-                    break;
-                case RED_BANNER:
-                    teamManager.addPlayer(main.red, player);
-                    break;
-                case GREEN_BANNER:
-                    teamManager.addPlayer(main.green, player);
-                    break;
-                case YELLOW_BANNER:
-                    teamManager.addPlayer(main.yellow, player);
-                    break;
-                case ORANGE_BANNER:
-                    teamManager.addPlayer(main.orange, player);
-                    break;
-                case PINK_BANNER:
-                    teamManager.addPlayer(main.pink, player);
-                    break;
-                case BLACK_BANNER:
-                    teamManager.addPlayer(main.black, player);
-                    break;
-                case GRAY_BANNER:
-                    teamManager.addPlayer(main.gray, player);
-                    break;
-                case CYAN_BANNER:
-                    teamManager.addPlayer(main.cyan, player);
-                    break;
-                default:
-                    break;
-            }
-            player.closeInventory();
-            return;
-        }
+        
         
         if(inv.equals(blockMenue.inv)) {
             e.setCancelled(true);
@@ -247,6 +251,7 @@ public class events implements Listener{
     public static void onJoinPlayer(final PlayerJoinEvent e) {
         e.getPlayer().getInventory().clear();
         e.getPlayer().getInventory().setItem(0, new ItemStack(Material.WHITE_BANNER, 1));
+        if(!dataBase.isPlayer(e.getPlayer())) dataBase.addPlayer(e.getPlayer());
     }
     
     @EventHandler

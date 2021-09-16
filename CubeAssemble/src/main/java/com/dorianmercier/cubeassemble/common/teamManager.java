@@ -36,6 +36,8 @@ public class teamManager {
         catch(NullPointerException e) {
             //Nothing to do. Teams are just not initialized. Not a problem.
         }
+
+        dataBase.resetTeams();
         
         gameConfig.listTeams.clear();
         
@@ -80,6 +82,7 @@ public class teamManager {
                 list.remove(player.getName());
             }
             gameConfig.listTeams.get(team.getName()).add(player.getName());
+            dataBase.setTeam(player, team.getName());
         }
 
         public static void setPlayerColor(Player player, ChatColor color) {
