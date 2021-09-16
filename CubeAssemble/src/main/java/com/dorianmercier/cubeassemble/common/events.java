@@ -165,7 +165,7 @@ public class events implements Listener{
                     gameConfig.currentConfigPage.put(player, 0);
                     break;
                 case ARROW:
-                    blockMenue.openInventory(player);
+                    setup.openInventory(player);
                     break;
                 default:
                     break;
@@ -177,19 +177,25 @@ public class events implements Listener{
             int k = e.getSlot();
             int nbPoints;
             if(0 <= k && k <= 8) {
-                Material material = inv.getItem(k + 18).getType();
-                nbPoints = gameConfig.getPoints(material);
-                gameConfig.setPoints(material, ++nbPoints);
-                createDisplay(Material.GOLD_NUGGET, min(nbPoints, 64), inv, k + 27, "" + nbPoints, "");
-                log.info("The player " + player.getName() + " updated the points for " + material + " to " + nbPoints);
+                ItemStack item = inv.getItem(k + 18);
+                if(item != null) {
+                    Material material = item.getType();
+                    nbPoints = gameConfig.getPoints(material);
+                    gameConfig.setPoints(material, ++nbPoints);
+                    createDisplay(Material.GOLD_NUGGET, min(nbPoints, 64), inv, k + 27, "" + nbPoints, "");
+                    log.info("The player " + player.getName() + " updated the points for " + material + " to " + nbPoints);
+                }
                 return;
             }
             if(9 <= k && k <= 17) {
-                Material material = inv.getItem(k + 9).getType();
-                nbPoints = max(gameConfig.getPoints(material) - 1, 0);
-                gameConfig.setPoints(material, nbPoints);
-                createDisplay(Material.GOLD_NUGGET, min(nbPoints, 64), inv, k + 18, "" + nbPoints, "");
-                log.info("The player " + player.getName() + " updated the points for " + material + " to " + nbPoints);
+                ItemStack item = inv.getItem(k + 9);
+                if(item != null) {
+                    Material material = item.getType();
+                    nbPoints = max(gameConfig.getPoints(material) - 1, 0);
+                    gameConfig.setPoints(material, nbPoints);
+                    createDisplay(Material.GOLD_NUGGET, min(nbPoints, 64), inv, k + 18, "" + nbPoints, "");
+                    log.info("The player " + player.getName() + " updated the points for " + material + " to " + nbPoints);
+                }
                 return;
             }
             if(k==45) {

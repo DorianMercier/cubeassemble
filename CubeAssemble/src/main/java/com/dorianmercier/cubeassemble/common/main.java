@@ -10,8 +10,8 @@ import org.bukkit.scoreboard.Team;
 public final class main extends JavaPlugin {
     
     //Creating teams
-    public static ScoreboardManager manager = Bukkit.getScoreboardManager();
-    public static Scoreboard board = manager.getNewScoreboard();
+    public static ScoreboardManager manager;
+    public static Scoreboard board;
 
     public static Team blue;
     public static Team red;
@@ -22,11 +22,13 @@ public final class main extends JavaPlugin {
     public static Team black;
     public static Team gray;
     public static Team cyan;
-    public static Team host = board.registerNewTeam("host");
-    
+    public static Team host;
 
     @Override
     public void onEnable() {
+        manager = Bukkit.getScoreboardManager();
+        board = manager.getNewScoreboard();
+        host = board.registerNewTeam("host");
         log.info("onEnable has been invoked!");
         this.getCommand("init").setExecutor(new cubeAssembleCommandExecutor(this));
         this.getCommand("clean").setExecutor(new cubeAssembleCommandExecutor(this));

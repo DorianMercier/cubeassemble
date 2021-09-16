@@ -7,10 +7,8 @@ package com.dorianmercier.cubeassemble.structures;
 
 import com.dorianmercier.cubeassemble.common.log;
 import org.bukkit.Bukkit;
-import static org.bukkit.Bukkit.getLogger;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 
 /**
  *

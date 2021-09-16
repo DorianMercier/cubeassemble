@@ -23,13 +23,21 @@ public class gameConfig {
     
     public static final String version = "v2.0";
     
+    //Freeze teams and do not allow player to change their team (moderator can still change player's team)
     public static boolean team_freezed = false;
+    //List of players authorized to perform config commands
     public static ArrayList<String> hostList = new ArrayList<String>();
+    //Total number of teams
     public static int numberTeams;
+    //List of teams and players
     public static final HashMap<String, ArrayList<String>> listTeams = new HashMap<>();
+    //All blocks needed for the game and their points are referenced here
     public static LinkedHashMap<Material, Integer> blocksConfig = new LinkedHashMap<>();
+    //List of all inventories containing blocks needed (only one inventory is supported for now)
     public static ArrayList<blocksInventory> invBlocks = new ArrayList<>();
+    //List of inventories in order to configure points of blocks
     public static ArrayList<blockConfigInventory> invBlockConfig = new ArrayList<>();
+    //Current page of invBlockConfig where players are currently. Usefull to know the next and previous page
     public static HashMap<Player, Integer> currentConfigPage = new HashMap<>();
     
     static {
