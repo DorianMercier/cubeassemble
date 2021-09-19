@@ -18,7 +18,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  *
@@ -27,6 +26,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class gameConfig {
     
     public static final String version = "v2.0";
+    
+    public static String[] teamsColors = {"Vert", "Jaune", "Orange", "Rose", "Noir", "Gris", "Cyan"};
+    
+    public static int previousNumberTeams;
+    public static int previousNumberItems;
     
     public static int numberTeams;
     //Freeze teams and do not allow player to change their team (moderator can still change player's team)
@@ -63,6 +67,8 @@ public class gameConfig {
     public static void loadConfig() {
         
         numberTeams = dataBase.getTeamsNumber();
+        previousNumberTeams = dataBase.getPreviousTeamsNumber();
+        previousNumberItems = dataBase.getPreviousNumberItems();
         
         team_freezed = dataBase.getTeamsFreezed();
         

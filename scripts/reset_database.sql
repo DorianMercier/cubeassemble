@@ -40,3 +40,5 @@ insert into teams values(default, 'Cyan', 0);
 
 insert into general_config values('numberTeams', 2);
 insert into general_config values('teamsFreezed', 0);
+insert into general_config values('previousNumberTeams', 2);
+insert into general_config values('previousNumberItems', 0);

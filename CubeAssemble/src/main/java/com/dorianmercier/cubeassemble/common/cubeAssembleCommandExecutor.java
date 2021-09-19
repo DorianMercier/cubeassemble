@@ -1,6 +1,7 @@
 package com.dorianmercier.cubeassemble.common;
 
 import com.dorianmercier.cubeassemble.inventories.setup;
+import com.dorianmercier.cubeassemble.structures.blockRooms;
 import com.dorianmercier.cubeassemble.structures.spawn;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -46,6 +47,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             log.info("Cleaning the map");
             if(args.length != 0) return false;
             //Destroying the spawn
+            blockRooms.reloadRooms(false);
             return spawn.build(false);
         }
         
@@ -92,6 +94,14 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             main.red.addEntry(sender.getName());
             sender.sendMessage("Liste de la team rouge : " + main.red.getEntries().toString());
             
+            return true;
+        }
+        
+        if (command.getName().equalsIgnoreCase("ready")) {
+            log.info("Reloading the rooms...");
+            blockRooms.reloadRooms(false);
+            blockRooms.reloadRooms(true);
+            log.info("Rooms reloaded");
             return true;
         }
         return false;

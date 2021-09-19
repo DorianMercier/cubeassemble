@@ -230,7 +230,7 @@ public class dataBase {
         }
     }
     
-     public static void setTeamsNumber(int value) {
+    public static void setTeamsNumber(int value) {
         try {
             PreparedStatement st = con.prepareStatement("update general_config set value=? where key like 'numberTeams'");
             st.setInt(1, value);
@@ -262,8 +262,54 @@ public class dataBase {
             return rs.getInt(1);
         }
         catch(SQLException e) {
-            log.error("Database : Cannot load 'teamsFreezed'");
+            log.error("Database : Cannot load numberTeams");
             return 2;
+        }
+    }
+    
+    public static int getPreviousTeamsNumber() {
+        try {
+            PreparedStatement st = con.prepareStatement("select value from general_config where key like 'previousNumberTeams'");
+            ResultSet rs = st.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot load previousNumberTeams");
+            return 2;
+        }
+    }
+    public static void setPreviousTeamsNumber(int value) {
+        try {
+            PreparedStatement st = con.prepareStatement("update general_config set value=? where key like 'previousNumberTeams'");
+            st.setInt(1, value);
+            st.execute();
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot set previousNumberTeams");
+        }
+    }
+    
+    public static int getPreviousNumberItems() {
+        try {
+            PreparedStatement st = con.prepareStatement("select value from general_config where key like 'previousNumberItems'");
+            ResultSet rs = st.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot load previousNumberTeams");
+            return 2;
+        }
+    }
+    public static void setPreviousNumberItems(int value) {
+        try {
+            PreparedStatement st = con.prepareStatement("update general_config set value=? where key like 'previousNumberItems'");
+            st.setInt(1, value);
+            st.execute();
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot set previousNumberItems");
         }
     }
 }

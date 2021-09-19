@@ -35,6 +35,7 @@ public final class main extends JavaPlugin {
         this.getCommand("setup").setExecutor(new cubeAssembleCommandExecutor(this));
         this.getCommand("test").setExecutor(new cubeAssembleCommandExecutor(this));
         this.getCommand("teammod").setExecutor(new cubeAssembleCommandExecutor(this));
+        this.getCommand("ready").setExecutor(new cubeAssembleCommandExecutor(this));
         
         //Initializing inventories
         new setup();
