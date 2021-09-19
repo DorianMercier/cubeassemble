@@ -116,22 +116,23 @@ public class events implements Listener{
         if(inv.equals(setup_teams.inv)) {
             e.setCancelled(true);
             boolean resetTeams = false;
-            int numberTeams = inv.getItem(4).getAmount();
-            if (clickedItem.getType().equals(Material.LIME_BANNER) && numberTeams < 9) {
-                inv.getItem(4).setAmount(++ numberTeams);
+            if (clickedItem.getType().equals(Material.LIME_BANNER) && gameConfig.numberTeams < 9) {
+                inv.getItem(4).setAmount(++ gameConfig.numberTeams);
                 resetTeams = true;
             }
-            else if(clickedItem.getType().equals(Material.RED_BANNER) && numberTeams > 2) {
-                inv.getItem(4).setAmount(-- numberTeams);
+            else if(clickedItem.getType().equals(Material.RED_BANNER) && gameConfig.numberTeams > 2) {
+                inv.getItem(4).setAmount(-- gameConfig.numberTeams);
                 resetTeams = true;
             }
             else if(clickedItem.getType().equals(Material.ARROW)) {
                 setup.openInventory(player);
             }else if(clickedItem.getType().equals(Material.ICE)) {
                 gameConfig.team_freezed = true;
+                dataBase.setTeamsFreezed(true);
                 log.info("The player " +  player.getName() + " freezed the teams");
                 tools.createDisplay(Material.LIME_TERRACOTTA, 1, inv, 8, "Dévérouiller les teams", "");
             }else if(clickedItem.getType().equals(Material.LIME_TERRACOTTA)) {
+                dataBase.setTeamsFreezed(false);
                 gameConfig.team_freezed = false;
                 tools.createDisplay(Material.ICE, 1, inv, 8, "Vérouiller les teams", "");
                 log.info("The player " +  player.getName() + " unfreezed the teams");
@@ -139,19 +140,10 @@ public class events implements Listener{
             
             
             if(resetTeams) {
-                log.info("The player " + player.getName() + " updated teams number to " + numberTeams);
+                dataBase.setTeamsNumber(gameConfig.numberTeams);
+                log.info("The player " + player.getName() + " updated teams number to " + gameConfig.numberTeams);
                 teamManager.resetTeams();
-                teams.inv.clear();
-                new teams();
-                Material[] orderedTeams = {Material.GREEN_BANNER, Material.YELLOW_BANNER, Material.ORANGE_BANNER, Material.PINK_BANNER, Material.BLACK_BANNER, Material.GRAY_BANNER, Material.CYAN_BANNER};
-                String[] teamsColors = {"Vert", "Jaune", "Orange", "Rose", "Noir", "Gris", "Cyan"};
-                for(int k = 3; k <= numberTeams; k++) {
-                    teams.inv.setItem(k-1, new ItemStack(orderedTeams[k-3], 1));
-                    ItemStack item = teams.inv.getItem(k-1);
-                    ItemMeta meta = item.getItemMeta();
-                    meta.setDisplayName(teamsColors[k-3]);
-                    item.setItemMeta(meta);
-                }
+                teams.update();
             }
             return;
         }
@@ -252,6 +244,7 @@ public class events implements Listener{
         e.getPlayer().getInventory().clear();
         e.getPlayer().getInventory().setItem(0, new ItemStack(Material.WHITE_BANNER, 1));
         if(!dataBase.isPlayer(e.getPlayer())) dataBase.addPlayer(e.getPlayer());
+        teamManager.updatePlayer(e.getPlayer());
     }
     
     @EventHandler
@@ -268,13 +261,7 @@ public class events implements Listener{
         if(e.getInventory().equals(blocksInventory.inv)) {
             log.info("The player " + e.getPlayer().getName() + " updated the required blocks");
             gameConfig.updateBlocksConfig(e.getInventory());
-            int nbBlocks = gameConfig.blocksConfig.size();
-            int indexFirst;
-            gameConfig.invBlockConfig.clear();
-            blockConfigInventory.nbInventories = 0;
-            for(indexFirst=0; indexFirst<nbBlocks; indexFirst+=9) {
-                gameConfig.invBlockConfig.add(new blockConfigInventory());
-            }
+            gameConfig.updateInventoriesBlocksConfig();
         }
     }
 }

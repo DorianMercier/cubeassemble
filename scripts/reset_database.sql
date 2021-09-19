@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS general_config;
-DROP TABLE IF EXISTS teams;
-DROP TABLE IF EXISTS players;
-DROP TABLE IF EXISTS blocks;
+DROP TABLE IF EXISTS general_config cascade;
+DROP TABLE IF EXISTS teams cascade;
+DROP TABLE IF EXISTS players cascade;
+DROP TABLE IF EXISTS blocks cascade;
 
 create table general_config(
     key varchar(64) constraint primary_key_general_config primary key,
@@ -23,8 +23,9 @@ CREATE TABLE players(
 );
 
 create table blocks(
-    material varchar(64) constraint primary_key_blocks primary key,
-    points integer
+    id SERIAL CONSTRAINT primary_key_blocks PRIMARY KEY,
+    material varchar(64) unique not null,
+    points integer not null
 );
 
 insert into teams values(default, 'Bleu', 0);
@@ -36,3 +37,6 @@ insert into teams values(default, 'Rose', 0);
 insert into teams values(default, 'Noir', 0);
 insert into teams values(default, 'Gris', 0);
 insert into teams values(default, 'Cyan', 0);
+
+insert into general_config values('numberTeams', 2);
+insert into general_config values('teamsFreezed', 0);

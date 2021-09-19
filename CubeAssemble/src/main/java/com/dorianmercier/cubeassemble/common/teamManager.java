@@ -7,6 +7,8 @@ package com.dorianmercier.cubeassemble.common;
 
 import static com.dorianmercier.cubeassemble.common.main.board;
 import java.util.ArrayList;
+import java.util.Collection;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -20,27 +22,7 @@ public class teamManager {
     public teamManager() {
     }
     
-    public static void resetTeams() {
-
-        try {
-            main.red.unregister();
-            main.blue.unregister();
-            main.green.unregister();
-            main.yellow.unregister();
-            main.orange.unregister();
-            main.pink.unregister();
-            main.black.unregister();
-            main.gray.unregister();
-            main.cyan.unregister();
-        }
-        catch(NullPointerException e) {
-            //Nothing to do. Teams are just not initialized. Not a problem.
-        }
-
-        dataBase.resetTeams();
-        
-        gameConfig.listTeams.clear();
-        
+    public static void initTeams() {
         gameConfig.listTeams.put("Bleu", new ArrayList<>());
         gameConfig.listTeams.put("Rouge", new ArrayList<>());
         gameConfig.listTeams.put("Vert", new ArrayList<>());
@@ -70,8 +52,36 @@ public class teamManager {
         main.black.setColor(ChatColor.BLACK);
         main.gray.setColor(ChatColor.GRAY);
         main.cyan.setColor(ChatColor.BLUE);
+    }
+    
+    public static void resetTeams() {
 
+        try {
+            main.red.unregister();
+            main.blue.unregister();
+            main.green.unregister();
+            main.yellow.unregister();
+            main.orange.unregister();
+            main.pink.unregister();
+            main.black.unregister();
+            main.gray.unregister();
+            main.cyan.unregister();
         }
+        catch(NullPointerException e) {
+            //Nothing to do. Teams are just not initialized. Not a problem.
+        }
+
+        dataBase.resetTeams();
+        gameConfig.listTeams.clear();
+        
+        Collection<? extends Player> colPlayers = Bukkit.getServer().getOnlinePlayers();
+        
+        for(Player player : colPlayers) {
+            setPlayerColor(player, ChatColor.RESET);
+        }
+        
+        initTeams();
+    }
 
         public static void addPlayer(Team team, Player player) {
             log.info("The player " + player.getName() + " joined the team " + team.getName());
@@ -84,7 +94,17 @@ public class teamManager {
             gameConfig.listTeams.get(team.getName()).add(player.getName());
             dataBase.setTeam(player, team.getName());
         }
-
+        
+        public static void updatePlayer(Player player) {
+            String teamName = gameConfig.playerLinkedTeam.get(player.getName());
+            if(teamName != null) {
+                Team team = main.board.getTeam(teamName);
+                setPlayerColor(player, team.getColor());
+                team.addEntry(player.getName());
+            }
+            else setPlayerColor(player, ChatColor.RESET);
+        }
+        
         public static void setPlayerColor(Player player, ChatColor color) {
            String playerName = player.getName();
            player.setDisplayName(color + playerName + ChatColor.RESET);

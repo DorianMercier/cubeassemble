@@ -47,7 +47,9 @@ public final class main extends JavaPlugin {
         new events(this);
         
         //Initializing teams
-        teamManager.resetTeams();
+        teamManager.initTeams();
+        
+        gameConfig.loadConfig();
     }
 
     @Override
@@ -55,5 +57,6 @@ public final class main extends JavaPlugin {
         log.info("onDisable has been invoked!");
         //Deleting scoreboards created
        
+        dataBase.disconnect();
     }
 }

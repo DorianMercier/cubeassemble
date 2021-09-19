@@ -5,11 +5,14 @@
  */
 package com.dorianmercier.cubeassemble.inventories;
 
+import com.dorianmercier.cubeassemble.common.gameConfig;
 import static com.dorianmercier.cubeassemble.inventories.tools.createDisplay;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 /**
  *
  * @author doria
@@ -32,5 +35,19 @@ public class teams {
     // You can open the inventory with this
     public static void openInventory(final HumanEntity ent) {
         ent.openInventory(inv);
+    }
+    
+    public static void update() {
+        inv.clear();
+        initializeItems();
+        Material[] orderedTeams = {Material.GREEN_BANNER, Material.YELLOW_BANNER, Material.ORANGE_BANNER, Material.PINK_BANNER, Material.BLACK_BANNER, Material.GRAY_BANNER, Material.CYAN_BANNER};
+        String[] teamsColors = {"Vert", "Jaune", "Orange", "Rose", "Noir", "Gris", "Cyan"};
+        for(int k = 3; k <= gameConfig.numberTeams; k++) {
+            inv.setItem(k-1, new ItemStack(orderedTeams[k-3], 1));
+            ItemStack item = inv.getItem(k-1);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(teamsColors[k-3]);
+            item.setItemMeta(meta);
+        }
     }
 }

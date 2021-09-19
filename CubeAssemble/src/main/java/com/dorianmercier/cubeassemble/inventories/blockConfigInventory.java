@@ -6,7 +6,6 @@
 package com.dorianmercier.cubeassemble.inventories;
 
 import com.dorianmercier.cubeassemble.common.gameConfig;
-import com.dorianmercier.cubeassemble.common.log;
 import static com.dorianmercier.cubeassemble.inventories.tools.createDisplay;
 import static java.lang.Integer.min;
 import java.util.ArrayList;

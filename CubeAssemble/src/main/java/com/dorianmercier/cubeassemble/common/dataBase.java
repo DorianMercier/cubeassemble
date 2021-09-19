@@ -12,6 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -32,6 +35,14 @@ public class dataBase {
         catch(ClassNotFoundException | SQLException e) {
             log.error("Cannot connect to the database : " + e.getLocalizedMessage());
             return null;
+        }
+    }
+    
+    public static void disconnect() {
+        try {
+            con.close();
+        } catch (SQLException ex) {
+            log.error("Database : Cannot close the connexion to the database");
         }
     }
     
@@ -121,7 +132,7 @@ public class dataBase {
     
     public static void addBlock(Material material, int points) {
         try {
-            PreparedStatement st = con.prepareStatement("insert into blocks values(?, ?)");
+            PreparedStatement st = con.prepareStatement("insert into blocks values(default, ?, ?)");
             st.setString(1, material.toString());
             st.setInt(2, points);
             st.execute();
@@ -169,23 +180,90 @@ public class dataBase {
         return result;
     }
     
-    public static HashMap<String, ArrayList<String>> getListTeams() {
-        HashMap<String, ArrayList<String>> result = new HashMap<>();
+    public static HashMap<String, String> getListTeams() {
+        HashMap<String, String> result = new HashMap<>();
         try {
-            PreparedStatement st = con.prepareStatement("select players.name, teams.name from players joint teams on teams.id = players.team");
+            PreparedStatement st = con.prepareStatement("select players.name, teams.name from players join teams on teams.id = players.team");
             ResultSet rs = st.executeQuery();
-            String player, team;
             while(rs.next()) {
-                player = rs.getString(1);
-                team = rs.getString(2);
-                //!!!!!In progress!!!!!!!!//
-                result.
-                result.add(rs.getString(1));
+                log.info("On a chargé le joueur " + rs.getString(1) + " pour la team " + rs.getString(2));
+                result.put(rs.getString(1), rs.getString(2));
             }
         }
         catch(SQLException e) {
-            log.error("Database : Cannot load hosts");
+            log.error("Database : Cannot load players and teams");
         }
         return result;
+    }
+    
+    public static LinkedHashMap<Material, Integer> getblocksConfig() {
+        LinkedHashMap<Material, Integer> result = new LinkedHashMap<>();
+        
+        try {
+            PreparedStatement st = con.prepareStatement("select material, points from blocks order by id asc");
+            ResultSet rs = st.executeQuery();
+            Material material;
+            int points;
+            while(rs.next()) {
+                material = Material.getMaterial(rs.getString(1));
+                points = rs.getInt(2);
+                result.put(material, points);
+            }
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot load blocks");
+        }
+        return result;
+    }
+    
+    public static void setTeamsFreezed(boolean value) {
+        try {
+            PreparedStatement st = con.prepareStatement("update general_config set value=? where key like 'teamsFreezed'");
+            int intValue;
+            if(value) intValue = 1;
+            else intValue = 0;
+            st.setInt(1, intValue);
+            st.execute();
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot set teamsFreezed");
+        }
+    }
+    
+     public static void setTeamsNumber(int value) {
+        try {
+            PreparedStatement st = con.prepareStatement("update general_config set value=? where key like 'numberTeams'");
+            st.setInt(1, value);
+            st.execute();
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot set teamsNumber");
+        }
+    }
+     
+    public static boolean getTeamsFreezed() {
+        try {
+            PreparedStatement st = con.prepareStatement("select value from general_config where key like 'teamsFreezed'");
+            ResultSet rs = st.executeQuery();
+            rs.next();
+            return rs.getInt(1)==1;
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot load teamsFreezed");
+            return false;
+        }
+    }
+    
+    public static int getTeamsNumber() {
+        try {
+            PreparedStatement st = con.prepareStatement("select value from general_config where key like 'numberTeams'");
+            ResultSet rs = st.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot load 'teamsFreezed'");
+            return 2;
+        }
     }
 }
