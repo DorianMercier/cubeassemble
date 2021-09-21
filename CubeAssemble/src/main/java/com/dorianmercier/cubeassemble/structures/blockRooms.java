@@ -44,8 +44,9 @@ public class blockRooms {
         int k=0;
         for(ArrayList<Integer> center : centers) {
             location = new Location(Bukkit.getWorld("world"), center.get(0), 250, center.get(1));
-            Material floor, glass;
+            Material floor, glass, pillar;
             if(build) {
+                pillar = Material.QUARTZ_PILLAR;
                 switch(k) {
                     case 0:
                         floor = Material.BLUE_CONCRETE;
@@ -91,11 +92,37 @@ public class blockRooms {
             else {
                 floor = Material.AIR;
                 glass = Material.AIR;
+                pillar = Material.AIR;
             }
             //Creating floor
             int size = (int) (3 + 2*ceil((float) numberItems/4.));
             createFloor(location, size, glass);
             k++;
+            
+            //Placing blocks
+            placePillars(location, size, pillar);
+            
+        }
+    }
+    
+    private static void placePillars(Location center, int size, Material material) {
+        World world = Bukkit.getWorld("world");
+        int x, z, z_init, x_init;
+        x = (int) (center.getX() + floor(size)/2);
+        z_init = (int) (center.getZ() + floor(size)/2 -2);
+        if(z_init<0) z_init--;
+        if(x<0) x--;
+        for(z = z_init; z> z_init - size + 4; z-=2) {
+            world.getBlockAt(x, 251, z).setType(material);
+            world.getBlockAt(x - size + 1, 251, z).setType(material);
+        }
+        z = (int) (center.getZ() - floor(size)/2);
+        x_init = (int) (center.getX() + floor(size)/2 -2);
+        if(z>0) z++;
+        if(x_init<0) x_init--;
+        for(x = x_init; x> x_init - size + 4; x-=2) {
+            world.getBlockAt(x, 251, z).setType(material);
+            world.getBlockAt(x, 251, z + size - 1).setType(material);
         }
     }
     
