@@ -9,15 +9,24 @@ import com.dorianmercier.cubeassemble.common.dataBase;
 import com.dorianmercier.cubeassemble.common.gameConfig;
 import com.dorianmercier.cubeassemble.common.log;
 import static java.lang.Math.PI;
+import static java.lang.Math.abs;
 import static java.lang.Math.ceil;
 import static java.lang.Math.cos;
 import static java.lang.Math.floor;
 import static java.lang.Math.sin;
 import java.util.ArrayList;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.material.MaterialData;
 
 /**
  *
@@ -100,9 +109,93 @@ public class blockRooms {
             k++;
             
             //Placing blocks
-            placePillars(location, size, pillar);
             
+            placePillars(location, size, pillar);
+            if(build) {
+                ArrayList<Map.Entry<Material, Integer>> listBlocks = new ArrayList<>(gameConfig.blocksConfig.entrySet());
+                
+                placeBlocks(location, size, listBlocks, listBlocks.size());
+            }
         }
+        if(!build) {
+            World world = Bukkit.getWorld("world");
+            for(Entity e : world.getEntities()) {
+                Location elocation = e.getLocation();
+                double x = elocation.getX();
+                double Y = elocation.getY();
+                double z = elocation.getZ();
+                if(e instanceof Item && abs(x) <= 100 && abs(z) <= 100 && z < 240) e.remove();
+            }
+        }
+    }
+    
+    private static void placeBlocks(Location center, int size, ArrayList<Map.Entry<Material, Integer>> listBlocks, int nbBlocks) {
+        World world = Bukkit.getWorld("world");
+        int x, z, z_init, x_init, k = 0;
+        x = (int) (center.getX() + floor(size)/2 - 1);
+        z_init = (int) (center.getZ() + floor(size)/2 -2);
+        if(z_init<0) z_init--;
+        if(x<0) x--;
+        Material material;
+        
+        for(z = z_init; z> z_init - size + 4; z-=2) {
+            if(k >= nbBlocks) return;
+            material = listBlocks.get(k).getKey();
+            world.getBlockAt(x, 250, z).setType(material, false);
+            
+           generateSign(x, z, BlockFace.WEST, material.name(), listBlocks.get(k++).getValue());
+        }
+        z = (int) (center.getZ() - floor(size)/2 +1);
+        x_init = (int) (center.getX() + floor(size)/2 -2);
+        if(z>0) z++;
+        if(x_init<0) x_init--;
+        for(x = x_init; x> x_init - size + 4; x-=2) {
+            if(k >= nbBlocks) return;
+            material = listBlocks.get(k).getKey();
+            world.getBlockAt(x, 250, z).setType(material, false);
+            generateSign(x, z, BlockFace.SOUTH, material.name(), listBlocks.get(k++).getValue());
+        }
+        
+        x = (int) (center.getX() - floor(size)/2 + 2);
+        z_init = (int) (center.getZ() - floor(size)/2 +3);
+        if(z_init<0) z_init--;
+        if(x<0) x--;
+        for(z = z_init; z< z_init + size - 4; z+=2) {
+            if(k >= nbBlocks) return;
+            material = listBlocks.get(k).getKey();
+            world.getBlockAt(x, 250, z).setType(material, false);
+            generateSign(x, z, BlockFace.EAST, material.name(), listBlocks.get(k++).getValue());
+        }
+        z = (int) (center.getZ() + floor(size)/2 -2);
+        x_init = (int) (center.getX() - floor(size)/2 +3);
+        if(z>0) z++;
+        if(x_init<0) x_init--;
+        for(x = x_init; x< x_init + size - 4; x+=2) {
+            if(k >= nbBlocks) return;
+            material = listBlocks.get(k).getKey();
+            world.getBlockAt(x, 250, z).setType(material, false);
+            generateSign(x, z, BlockFace.NORTH, material.name(), listBlocks.get(k++).getValue());
+        }
+    }
+    
+    private static void generateSign(int x, int z, BlockFace face, String blockType, int points) {
+        Sign sign;
+        Block block;
+        block = Bukkit.getWorld("world").getBlockAt(x, 251, z);
+        block.setType(Material.OAK_WALL_SIGN,false);
+
+        sign = (Sign) block.getState();
+
+        sign.setLine(0, "---------------");
+        sign.setLine(1, blockType.toLowerCase());
+        sign.setLine(2, points + " points");
+        sign.setLine(3, "---------------");
+
+        org.bukkit.block.data.type.WallSign signData = (org.bukkit.block.data.type.WallSign) sign.getBlockData();
+        signData.setFacing(face);
+        sign.setBlockData(signData);
+        block.setBlockData(sign.getBlockData());
+        sign.update();
     }
     
     private static void placePillars(Location center, int size, Material material) {
