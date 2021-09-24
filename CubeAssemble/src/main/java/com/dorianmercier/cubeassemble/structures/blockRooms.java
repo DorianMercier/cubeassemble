@@ -184,16 +184,36 @@ public class blockRooms {
         World world = Bukkit.getWorld("world");
         try {
                 world.getBlockAt(x, 250, z).setType(material, false);
+        }
+        catch(Exception e) {
+            //The item is not a block, so we put it in an ItemFrame
+            ItemFrame frame = (ItemFrame) world.spawn(world.getBlockAt(x, 251, z).getLocation(), ItemFrame.class);
+            frame.setItem(new ItemStack(material));
+            frame.setFacingDirection(BlockFace.UP);
+            frame.setInvulnerable(true);
+            frame.setFixed(true);
+            frame.setRotation(rotation);
+
+            //Placing an empty itemframe to put the item needed
+            //Choosing the right coordinate
+            switch(rotation) {
+                case CLOCKWISE:
+                    x++;
+                    break;
+                case NONE:
+                    z--;
+                    break;
+                case COUNTER_CLOCKWISE:
+                    x--;
+                    break;
+                default:
+                    z++;
+                    break;
             }
-            catch(Exception e) {
-                //The item is not a block, so we put it in an ItemFrame
-                ItemFrame frame = (ItemFrame) world.spawn(world.getBlockAt(x, 251, z).getLocation(), ItemFrame.class);
-                frame.setItem(new ItemStack(material));
-                frame.setFacingDirection(BlockFace.UP);
-                frame.setInvulnerable(true);
-                frame.setFixed(true);
-                frame.setRotation(rotation);
-            }
+            frame = (ItemFrame) world.spawn(world.getBlockAt(x, 252, z).getLocation(), ItemFrame.class);
+            frame.setFacingDirection(BlockFace.UP);
+            frame.setInvulnerable(true);
+        }
     }
     
     private static void generateSign(int x, int z, BlockFace face, String blockType, int points) {

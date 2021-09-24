@@ -24,13 +24,13 @@ commands:
        usage: /<command>
        permission: op
        permission-message: You don't have <permission>
-   teammod:
-       description: CubeAssemble team management command
-       usage: /<command> [join | list] <team> (Player)
-       permission: op
-       permission-message: You don't have <permission>
    ready:
        description: CubeAssemble command to reload blocks plateforms
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   start:
+       description: CubeAssemble command to start the game
        usage: /<command>
        permission: op
        permission-message: You don't have <permission>

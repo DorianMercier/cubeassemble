@@ -3,12 +3,18 @@ package com.dorianmercier.cubeassemble.common;
 import com.dorianmercier.cubeassemble.inventories.setup;
 import com.dorianmercier.cubeassemble.structures.blockRooms;
 import com.dorianmercier.cubeassemble.structures.spawn;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Team;
 
 public class cubeAssembleCommandExecutor implements CommandExecutor {
@@ -60,34 +66,6 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             
             return true;
         }
-        if(command.getName().equalsIgnoreCase("teammod")) {
-            if(args.length < 2) return false;
-            Team team;
-                team = main.board.getTeam(args[1]);
-            if(team == null) {
-                sender.sendMessage("La team \"" + args[1] + "\" n'existe pas.");
-                return false;
-            }
-            switch(args[0]) {
-                case "list":
-                    sender.sendMessage("Liste des joueurs de la team \"" + args[1] + "\" :");
-                    sender.sendMessage(team.getEntries().toString());
-                    break;
-                case "join":
-                    if(args.length < 3) return false;
-                    try {
-                        teamManager.addPlayer(team, Bukkit.getPlayer(args[2]));
-                        sender.sendMessage("Vous avez placé le joueur " + args[2] + " dans la team " + args[1]);
-                    }
-                    catch(Exception e) {
-                        sender.sendMessage("Le joueur " + args[2] + " n'existe pas");
-                        return false;
-                    }
-                    
-                    break;
-            }
-            return true;
-        }
         if(command.getName().equalsIgnoreCase("test")) {
             
             sender.sendMessage("Nom de la team rouge : " + main.red.getName());
@@ -103,6 +81,27 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             blockRooms.reloadRooms(true);
             log.info("Rooms reloaded");
             return true;
+        }
+        
+        if(command.getName().equalsIgnoreCase("start")) {
+            //Initialization of the scoreboard
+            log.info("The player " + sender.getName() + " started the game");
+            main.score = main.board.registerNewObjective("scores", "dummy", "Scores");
+            main.score.setDisplaySlot(DisplaySlot.SIDEBAR);
+            ArrayList<String> listTeams = new ArrayList<>();
+            ArrayList<Map.Entry<String, String>> playersTeams = new ArrayList<>(gameConfig.playerLinkedTeam.entrySet());
+            String teamName;
+            for(Entry<String, String> entry : playersTeams) {
+                teamName = entry.getValue();
+                if(!listTeams.contains(teamName)) listTeams.add(teamName);
+            }
+            
+            Score score;
+            for(String team : listTeams) {
+                score = main.score.getScore(main.board.getTeam(team).getColor() + team);
+                score.setScore(0);
+            }
+            
         }
         return false;
     }

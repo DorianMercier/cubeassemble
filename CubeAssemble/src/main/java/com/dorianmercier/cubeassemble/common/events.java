@@ -5,7 +5,7 @@
  */
 package com.dorianmercier.cubeassemble.common;
 
-import com.dorianmercier.cubeassemble.inventories.blockConfigInventory;
+import static com.dorianmercier.cubeassemble.common.gameConfig.nonCompatible;
 import com.dorianmercier.cubeassemble.inventories.blockMenue;
 import com.dorianmercier.cubeassemble.inventories.blocksInventory;
 import com.dorianmercier.cubeassemble.inventories.setup;
@@ -15,22 +15,35 @@ import com.dorianmercier.cubeassemble.inventories.tools;
 import static com.dorianmercier.cubeassemble.inventories.tools.createDisplay;
 import static java.lang.Integer.max;
 import static java.lang.Integer.min;
+import static java.lang.Math.abs;
+import java.util.ArrayList;
+import java.util.Collection;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 
 /**
  *
@@ -264,4 +277,81 @@ public class events implements Listener{
             gameConfig.updateInventoriesBlocksConfig();
         }
     }
+    
+    @EventHandler
+    public static void onPlaceBlock(BlockPlaceEvent e) {
+        //Managing block placemement in RoomBlocks
+        Block block = e.getBlockPlaced();
+        Location location = block.getLocation();
+        int x = (int) location.getX(), z = (int) location.getZ();
+        if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 250) {
+            World world = Bukkit.getWorld("world");
+            Material checkMaterial;
+            ArrayList<Location> checkLocations = new ArrayList<>();
+            checkLocations.add(new Location(world, x + 1, 250, z));
+            checkLocations.add(new Location(world, x - 1, 250, z));
+            checkLocations.add(new Location(world, x, 250, z + 1));
+            checkLocations.add(new Location(world, x, 250, z - 1));
+            int k=0;
+            for(Location checkLocation : checkLocations) {
+               checkMaterial = world.getBlockAt(checkLocation).getType();
+               if(!nonCompatible.contains(checkMaterial) && checkMaterial.equals(block.getType())) break;
+               else k++;
+            }
+            if(k==4) {
+                //No block correspond to the description, cancel the event
+                e.setCancelled(true);
+                return;
+            }
+            //Ading the points to the corresponding team
+            obtainItem(e.getPlayer(), block.getType());
+        }
+    }
+    
+    @EventHandler
+    public static void onClickEntity(PlayerInteractEntityEvent e) {
+        Player player = e.getPlayer();
+        Entity entity = e.getRightClicked();
+        Location location = entity.getLocation();
+        int x = (int) location.getX(), z = (int) location.getZ();
+        if(entity instanceof ItemFrame && abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 250) {
+            Material currentMaterial = player.getInventory().getItemInMainHand().getType();
+            World world = Bukkit.getWorld("world");
+            Material checkMaterial;
+            Collection<Entity> listEntities = new ArrayList(world.getEntitiesByClass((Class) ItemFrame.class));
+            Collection<Entity> listEntitiesiteration = world.getEntitiesByClass((Class) ItemFrame.class);
+            for(Entity curEntity : listEntitiesiteration) {
+                if(curEntity instanceof ItemFrame && distance(location, curEntity.getLocation()) <= 1) {
+                    ItemFrame checkFrame = (ItemFrame) curEntity;
+                    checkMaterial = checkFrame.getItem().getType();
+                    if(!checkMaterial.equals(currentMaterial)) {
+                        listEntities.remove(curEntity);
+                    }
+                }
+                else listEntities.remove(curEntity);
+            }
+            if(listEntities.isEmpty()) {
+                e.setCancelled(true);
+            }
+            else {
+                obtainItem(player, currentMaterial);
+            }
+        }
+    }
+    
+    private static void obtainItem(Player player, Material material) {
+        String teamName = gameConfig.playerLinkedTeam.get(player.getName());
+        Objective score = main.board.getObjective("scores");
+        String teamNameString = main.board.getTeam(teamName).getColor() + teamName;
+        int newScore = gameConfig.blocksConfig.get(material) + score.getScore(teamNameString).getScore();
+        score.getScore(main.board.getTeam(teamName).getColor() + teamName).setScore(newScore);
+        log.info("The player " + player.getName() + " has brought the block " + material.toString());
+        Bukkit.broadcastMessage("L'équipe " + teamNameString + ChatColor.RESET + " a déposé " + material.toString().toLowerCase());
+    }
+    
+    private static int distance(Location loc1, Location loc2) {
+        return max(abs((int) (loc1.getX() - loc2.getX())), abs((int) (loc1.getZ() - loc2.getZ())));
+    }
 }
+
+

@@ -50,6 +50,8 @@ public class gameConfig {
     //Current page of invBlockConfig where players are currently. Usefull to know the next and previous page
     public static HashMap<Player, Integer> currentConfigPage = new HashMap<>();
     
+    public static ArrayList<Material> nonCompatible = new ArrayList<>();
+    
     static {
         listTeams.put("Bleu", new ArrayList<>());
         listTeams.put("Rouge", new ArrayList<>());
@@ -62,6 +64,19 @@ public class gameConfig {
         listTeams.put("Cyan", new ArrayList<>());
         
         invBlockConfig.add(new blockConfigInventory());
+        
+        nonCompatible.add(Material.BLUE_STAINED_GLASS);
+        nonCompatible.add(Material.RED_STAINED_GLASS);
+        nonCompatible.add(Material.BLUE_STAINED_GLASS);
+        nonCompatible.add(Material.GREEN_STAINED_GLASS);
+        nonCompatible.add(Material.YELLOW_STAINED_GLASS);
+        nonCompatible.add(Material.ORANGE_STAINED_GLASS);
+        nonCompatible.add(Material.PINK_STAINED_GLASS);
+        nonCompatible.add(Material.BLACK_STAINED_GLASS);
+        nonCompatible.add(Material.GRAY_STAINED_GLASS);
+        nonCompatible.add(Material.CYAN_STAINED_GLASS);
+        nonCompatible.add(Material.BARRIER);
+        nonCompatible.add(Material.AIR);
     }
     
     public static void loadConfig() {

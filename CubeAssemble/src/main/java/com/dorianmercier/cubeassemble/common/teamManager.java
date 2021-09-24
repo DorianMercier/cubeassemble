@@ -32,26 +32,29 @@ public class teamManager {
         gameConfig.listTeams.put("Noir", new ArrayList<>());
         gameConfig.listTeams.put("Gris", new ArrayList<>());
         gameConfig.listTeams.put("Cyan", new ArrayList<>());
-
-        main.blue = board.registerNewTeam("Bleu");
-        main.red = board.registerNewTeam("Rouge");
-        main.green = board.registerNewTeam("Vert");
-        main.yellow = board.registerNewTeam("Jaune");
-        main.orange = board.registerNewTeam("Orange");
-        main.pink = board.registerNewTeam("Rose");
-        main.black = board.registerNewTeam("Noir");
-        main.gray = board.registerNewTeam("Gris");
-        main.cyan = board.registerNewTeam("Cyan");
-
-        main.blue.setColor(ChatColor.DARK_BLUE);
-        main.red.setColor(ChatColor.RED);
-        main.green.setColor(ChatColor.GREEN);
-        main.yellow.setColor(ChatColor.YELLOW);
-        main.orange.setColor(ChatColor.GOLD);
-        main.pink.setColor(ChatColor.LIGHT_PURPLE);
-        main.black.setColor(ChatColor.BLACK);
-        main.gray.setColor(ChatColor.GRAY);
-        main.cyan.setColor(ChatColor.BLUE);
+        
+        main.blue = getTeam("Bleu", ChatColor.DARK_BLUE);
+        main.red = getTeam("Rouge", ChatColor.RED);
+        main.green = getTeam("Vert", ChatColor.GREEN);
+        main.yellow = getTeam("Jaune", ChatColor.YELLOW);
+        main.orange = getTeam("Orange", ChatColor.GOLD);
+        main.pink = getTeam("Rose", ChatColor.LIGHT_PURPLE);
+        main.black = getTeam("Noir", ChatColor.BLACK);
+        main.gray = getTeam("Gris", ChatColor.GRAY);
+        main.cyan = getTeam("Cyan", ChatColor.BLUE);
+    }
+    
+    private static Team getTeam(String name, ChatColor color) {
+        Team team;
+        try {
+            team = board.getTeam(name);
+            if(team == null) throw new Exception();
+        }
+        catch(Exception e) {
+            team = board.registerNewTeam(name);
+            team.setColor(color);
+        }
+        return team;
     }
     
     public static void resetTeams() {
@@ -83,31 +86,32 @@ public class teamManager {
         initTeams();
     }
 
-        public static void addPlayer(Team team, Player player) {
-            log.info("The player " + player.getName() + " joined the team " + team.getName());
+    public static void addPlayer(Team team, Player player) {
+        log.info("The player " + player.getName() + " joined the team " + team.getName());
+        setPlayerColor(player, team.getColor());
+        team.addEntry(player.getName());
+        for(ArrayList<String> list : gameConfig.listTeams.values()) {
+            //Removing player for all team lists
+            list.remove(player.getName());
+        }
+        gameConfig.listTeams.get(team.getName()).add(player.getName());
+        dataBase.setTeam(player, team.getName());
+        gameConfig.playerLinkedTeam.put(player.getName(), team.getName());
+    }
+
+    public static void updatePlayer(Player player) {
+        String teamName = gameConfig.playerLinkedTeam.get(player.getName());
+        if(teamName != null) {
+            Team team = main.board.getTeam(teamName);
             setPlayerColor(player, team.getColor());
             team.addEntry(player.getName());
-            for(ArrayList<String> list : gameConfig.listTeams.values()) {
-                //Removing player for all team lists
-                list.remove(player.getName());
-            }
-            gameConfig.listTeams.get(team.getName()).add(player.getName());
-            dataBase.setTeam(player, team.getName());
         }
-        
-        public static void updatePlayer(Player player) {
-            String teamName = gameConfig.playerLinkedTeam.get(player.getName());
-            if(teamName != null) {
-                Team team = main.board.getTeam(teamName);
-                setPlayerColor(player, team.getColor());
-                team.addEntry(player.getName());
-            }
-            else setPlayerColor(player, ChatColor.RESET);
-        }
-        
-        public static void setPlayerColor(Player player, ChatColor color) {
-           String playerName = player.getName();
-           player.setDisplayName(color + playerName + ChatColor.RESET);
-           player.setPlayerListName(color + playerName);
+        else setPlayerColor(player, ChatColor.RESET);
+    }
+
+    public static void setPlayerColor(Player player, ChatColor color) {
+       String playerName = player.getName();
+       player.setDisplayName(color + playerName + ChatColor.RESET);
+       player.setPlayerListName(color + playerName);
     }
 }
