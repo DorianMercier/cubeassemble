@@ -14,6 +14,10 @@ public final class main extends JavaPlugin {
     public static ScoreboardManager manager;
     public static Scoreboard board;
     public static Objective config;
+    public static Objective lastX;
+    public static Objective lastY;
+    public static Objective lastZ;
+    public static Objective lastWorld;
 
     public static Team blue;
     public static Team red;
@@ -48,6 +52,7 @@ public final class main extends JavaPlugin {
         this.getCommand("reset").setExecutor(new cubeAssembleCommandExecutor(this));
         this.getCommand("inv").setExecutor(new cubeAssembleCommandExecutor(this));
         this.getCommand("save").setExecutor(new cubeAssembleCommandExecutor(this));
+        this.getCommand("giveCompass").setExecutor(new cubeAssembleCommandExecutor(this));
         
         //Initializing inventories
         new setup();
@@ -68,6 +73,22 @@ public final class main extends JavaPlugin {
         if(config == null) {
             config = board.registerNewObjective("config", "dummy", "config");
             config.getScore("gamePhase").setScore(0);
+        }
+        lastX = board.getObjective("lastX");
+        if(lastX == null) {
+            lastX = board.registerNewObjective("lastX", "dummy", "lastX");
+        }
+        lastY = board.getObjective("lastY");
+        if(lastY == null) {
+            lastY = board.registerNewObjective("lastY", "dummy", "lastY");
+        }
+        lastZ = board.getObjective("lastZ");
+        if(lastZ == null) {
+            lastZ = board.registerNewObjective("lastZ", "dummy", "lastZ");
+        }
+        lastWorld = board.getObjective("lastWorld");
+        if(lastWorld == null) {
+            lastWorld = board.registerNewObjective("lastWorld", "dummy", "lastWorld");
         }
         gameConfig.gamePhase = config.getScore("gamePhase").getScore();
     }

@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -31,9 +32,23 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             this.plugin = plugin; // Store the plugin in situations where you need it.
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         
         World world = Bukkit.getWorld("world");
+        
+        if(command.getName().equalsIgnoreCase("giveCompass")) {
+            if(args.length != 1) return false;
+            
+            try {
+                gameConfig.giveCompas(Bukkit.getPlayer(args[0]));
+                return true;
+            }
+            catch(Exception e) {
+                sender.sendMessage("Impossible de donner le compass à ce joueur");
+                return false;
+            }
+        }
         
         if(command.getName().equalsIgnoreCase("save")) {
             if(!gameConfig.onInvConfig.contains((Player) sender)) {
@@ -79,6 +94,11 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
                 log.warning("Failed to set world spawn");
                 return false;
             }
+            
+            world.setTime(6000);
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            world.setClearWeatherDuration(10);
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
             
             gameConfig.hostList.add(sender.getName());
             dataBase.addhost((Player) sender);
@@ -175,14 +195,46 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
                 Sscore = score.getScore(main.board.getTeam(team).getColor() + team);
                 Sscore.setScore(0);
             }
+            
+            Player playerSender = (Player) sender;
+            playerSender.chat("/recipe give @a *");
+                    
+            
+            for(Player player : Bukkit.getOnlinePlayers()) {
+                player.setGameMode(GameMode.SURVIVAL);
+                player.teleport(new Location(world, 0, 250, 0));
+                startInventory.assign(player);
+                gameConfig.giveCompas(player);
+                main.lastY.getScore(player.getName()).setScore(-1);
+            }
+            world.setTime(0);
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
+            world.setClearWeatherDuration(0);
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, true);
+            Bukkit.broadcastMessage("Début de la partie. Vous avez 10 secondes d'invulnérabilité");
+            gameConfig.updateRoomsLocation();
+            log.info("Valeur des centres : " + gameConfig.roomsLocations.toString());
             setGamePhase(3);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(10000);
+                        Bukkit.broadcastMessage("Période d'invulnérabilité terminée.");
+                        setGamePhase(4);
+                    }
+                    catch(InterruptedException e) {
+                        log.error("Thread error in start command : " + e);
+                    }
+                }
+            });
         }
         if(command.getName().equalsIgnoreCase("finish")) {
             if(gameConfig.gamePhase < 3) {
                 sender.sendMessage(ChatColor.RED + "Action impossible. La partie n'a pas encore commencé.");
                 return true;
             }
-            if(gameConfig.gamePhase > 3) {
+            if(gameConfig.gamePhase > 4) {
                 sender.sendMessage(ChatColor.RED + "Action impossible. La partie est déjà terminée.");
                 return true;
             }
@@ -190,7 +242,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             for(Player player : Bukkit.getOnlinePlayers()) {
                 player.setGameMode(GameMode.SPECTATOR);
             }
-            setGamePhase(4);
+            setGamePhase(5);
             return true;
         }
         if(command.getName().equalsIgnoreCase("reset")) {
@@ -198,16 +250,23 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Action impossible. La partie n'a pas encore commencé.");
                 return true;
             }
-            if(gameConfig.gamePhase == 3) {
+            if(gameConfig.gamePhase == 3 || gameConfig.gamePhase == 4) {
                 sender.sendMessage(ChatColor.RED + "Action impossible. La partie n'est pas terminée.");
                 return true;
             }
             for(Player player : Bukkit.getOnlinePlayers()) {
                 player.setGameMode(GameMode.ADVENTURE);
                 player.teleport(new Location(world, 0, 252, 0));
+                player.getInventory().clear();
+                player.getInventory().setItem(0, new ItemStack(Material.WHITE_BANNER, 1));
             }
             teamManager.resetTeams();
             main.board.getObjective("scores").unregister();
+            
+            world.setTime(6000);
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            world.setClearWeatherDuration(10);
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
             
             setGamePhase(1);
             return true;

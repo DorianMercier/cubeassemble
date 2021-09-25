@@ -54,4 +54,9 @@ commands:
        usage: /<command>
        permission: op
        permission-message: You don't have <permission>
+   giveCompass:
+       description: CubeAssemble command give the teleportation tool to the player
+       usage: /<command> <player>
+       permission: op
+       permission-message: You don't have <permission>
      

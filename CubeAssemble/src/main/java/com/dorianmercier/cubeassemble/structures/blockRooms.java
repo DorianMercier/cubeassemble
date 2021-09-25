@@ -54,10 +54,11 @@ public class blockRooms {
         int k=0;
         for(ArrayList<Integer> center : centers) {
             location = new Location(Bukkit.getWorld("world"), center.get(0), 250, center.get(1));
-            Material floor, glass, pillar, barrier;
+            Material floor, glass, pillar, barrier, light;
             if(build) {
                 pillar = Material.QUARTZ_PILLAR;
                 barrier = Material.BARRIER;
+                light = Material.LIGHT;
                 switch(k) {
                     case 0:
                         floor = Material.BLUE_CONCRETE;
@@ -105,6 +106,7 @@ public class blockRooms {
                 glass = Material.AIR;
                 pillar = Material.AIR;
                 barrier = Material.AIR;
+                light = Material.AIR;
             }
             //Creating floor
             int size = (int) (3 + 2*ceil((float) numberItems/4.));
@@ -112,13 +114,17 @@ public class blockRooms {
             k++;
             
             //Placing blocks
+            Location lightCenter = location.clone().add(0,4,0);
             
-            placePillars(location, size, pillar);
+            placePillars(location, size, pillar, light);
             if(build) {
                 ArrayList<Map.Entry<Material, Integer>> listBlocks = new ArrayList<>(gameConfig.blocksConfig.entrySet());
                 
                 placeBlocks(location, size, listBlocks, listBlocks.size());
+                Bukkit.getWorld("world").getBlockAt(location).setType(Material.CRAFTING_TABLE);
+                Bukkit.getWorld("world").getBlockAt(lightCenter).setType(Material.LIGHT);
             }
+            else Bukkit.getWorld("world").getBlockAt(lightCenter).setType(Material.AIR);
         }
         if(!build) {
             World world = Bukkit.getWorld("world");
@@ -139,6 +145,7 @@ public class blockRooms {
         z_init = (int) (center.getZ() + floor(size)/2 -2);
         if(z_init<0) z_init--;
         if(x<0) x--;
+        
         Material material;
         
         for(z = z_init; z> z_init - size + 4; z-=2) {
@@ -234,9 +241,10 @@ public class blockRooms {
         sign.setBlockData(signData);
         block.setBlockData(sign.getBlockData());
         sign.update();
+        //Spawning light to prevent mob spawning and snow accumulation
     }
     
-    private static void placePillars(Location center, int size, Material material) {
+    private static void placePillars(Location center, int size, Material material, Material light) {
         World world = Bukkit.getWorld("world");
         int x, z, z_init, x_init;
         x = (int) (center.getX() + floor(size)/2);
@@ -245,7 +253,9 @@ public class blockRooms {
         if(x<0) x--;
         for(z = z_init; z> z_init - size + 4; z-=2) {
             world.getBlockAt(x, 251, z).setType(material);
+            world.getBlockAt(x, 253, z).setType(light);
             world.getBlockAt(x - size + 1, 251, z).setType(material);
+            world.getBlockAt(x - size + 1, 253, z).setType(light);
         }
         z = (int) (center.getZ() - floor(size)/2);
         x_init = (int) (center.getX() + floor(size)/2 -2);
@@ -253,7 +263,9 @@ public class blockRooms {
         if(x_init<0) x_init--;
         for(x = x_init; x> x_init - size + 4; x-=2) {
             world.getBlockAt(x, 251, z).setType(material);
+            world.getBlockAt(x, 253, z).setType(light);
             world.getBlockAt(x, 251, z + size - 1).setType(material);
+            world.getBlockAt(x, 253, z + size - 1).setType(light);
         }
     }
     
@@ -297,7 +309,7 @@ public class blockRooms {
         }
     }
     
-    private static ArrayList<ArrayList<Integer>> getCenters(int nbTeams) {
+    public static ArrayList<ArrayList<Integer>> getCenters(int nbTeams) {
         ArrayList<ArrayList<Integer>> result;
         result = new ArrayList<>();
         

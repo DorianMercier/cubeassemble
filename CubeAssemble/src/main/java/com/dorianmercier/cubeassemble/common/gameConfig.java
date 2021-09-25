@@ -10,14 +10,18 @@ import com.dorianmercier.cubeassemble.inventories.blocksInventory;
 import com.dorianmercier.cubeassemble.inventories.setup_teams;
 import com.dorianmercier.cubeassemble.inventories.teams;
 import com.dorianmercier.cubeassemble.inventories.tools;
+import com.dorianmercier.cubeassemble.structures.blockRooms;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  *
@@ -57,6 +61,10 @@ public class gameConfig {
     
     public static ArrayList<Material> nonCompatible = new ArrayList<>();
     
+    public static HashMap<String, Location> roomsLocations = new HashMap<>();
+    
+    public static ItemStack compas = new ItemStack(Material.COMPASS);
+    
     static {
         listTeams.put("Bleu", new ArrayList<>());
         listTeams.put("Rouge", new ArrayList<>());
@@ -82,6 +90,17 @@ public class gameConfig {
         nonCompatible.add(Material.CYAN_STAINED_GLASS);
         nonCompatible.add(Material.BARRIER);
         nonCompatible.add(Material.AIR);
+        
+        //Construction of teleporting item
+        
+        ItemMeta compasMeta = compas.getItemMeta();
+        compasMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 0, true);
+        compasMeta.addEnchant(Enchantment.VANISHING_CURSE, 1, true);
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add("Clic droit pour vous téléporter");
+        compasMeta.setLore(lore);
+        compasMeta.setDisplayName("Outil de téléportation");
+        compas.setItemMeta(compasMeta);
     }
     
     public static void loadConfig() {
@@ -117,6 +136,9 @@ public class gameConfig {
             log.info("Loading the config for the block " + material.toString());
         }
         updateInventoriesBlocksConfig();
+        
+        //Registering roomsCenters
+        updateRoomsLocation();
     }
     
     public static void setGamePhase(int phase) {
@@ -180,6 +202,22 @@ public class gameConfig {
         blockConfigInventory.nbInventories = 0;
         for(indexFirst=0; indexFirst<nbBlocks; indexFirst+=9) {
             invBlockConfig.add(new blockConfigInventory());
+        }
+    }
+    
+    public static void giveCompas(Player player) {
+        player.getInventory().remove(compas);
+        player.getInventory().addItem(compas);
+    }
+    
+    public static void updateRoomsLocation() {
+        ArrayList<ArrayList<Integer>> listCenters = blockRooms.getCenters(numberTeams);
+        Location location;
+        int k = 0;
+        String[] teamsNames = {"Bleu", "Rouge", "Vert", "Jaune", "Orange", "Rose", "Noir", "Gris", "Cyan"};
+        for(ArrayList<Integer> list : listCenters) {
+            location = new Location(Bukkit.getWorld("world"), list.get(0), 252, list.get(1));
+            roomsLocations.put(teamsNames[k++], location);
         }
     }
 }

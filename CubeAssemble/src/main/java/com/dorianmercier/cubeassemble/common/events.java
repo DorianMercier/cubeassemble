@@ -31,17 +31,23 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -67,13 +73,14 @@ public class events implements Listener{
         Inventory inv = e.getInventory();
         if (clickedItem == null || clickedItem.getType().isAir() || gameConfig.gamePhase > 2) return;
         
-        if(!gameConfig.canClick.contains(player)) {
+        if(!player.getGameMode().equals(GameMode.CREATIVE) && !gameConfig.canClick.contains(player)) {
             e.setCancelled(true);
         }
         
         //Choice team menue
         if(inv.equals(teams.inv)) {
             // Using slots click is a best option for your inventory click's
+            e.setCancelled(true);
             switch (clickedItem.getType()) {
                 case BLUE_BANNER:
                     teamManager.addPlayer(main.blue, player);
@@ -110,6 +117,7 @@ public class events implements Listener{
         }
         //Setup menue
         if(inv.equals(setup.inv)) {
+            e.setCancelled(true);
             if (clickedItem.getType().equals(Material.GRASS_BLOCK)) {
                 blockMenue.openInventory(player);
             }
@@ -121,6 +129,7 @@ public class events implements Listener{
         
         //Team manager menue
         if(inv.equals(setup_teams.inv)) {
+            e.setCancelled(true);
             boolean resetTeams = false;
             if (clickedItem.getType().equals(Material.LIME_BANNER) && gameConfig.numberTeams < 9) {
                 inv.getItem(4).setAmount(++ gameConfig.numberTeams);
@@ -156,6 +165,7 @@ public class events implements Listener{
         }
         
         if(inv.equals(blockMenue.inv)) {
+            e.setCancelled(true);
             switch (clickedItem.getType()) {
                 case STONE:
                     gameConfig.canClick.add(player);
@@ -223,9 +233,8 @@ public class events implements Listener{
     
     @EventHandler
     public static void onInventoryClick(final InventoryDragEvent e) {
-        Inventory inv = e.getInventory();
         Player player = (Player) e.getWhoClicked();
-        if (gameConfig.gamePhase < 3 && !gameConfig.canClick.contains(player)) {
+        if(!(player.getGameMode().equals(GameMode.CREATIVE)) && gameConfig.gamePhase < 3 && !gameConfig.canClick.contains(player)) {
           e.setCancelled(true);
         }
     }
@@ -254,6 +263,10 @@ public class events implements Listener{
             e.getPlayer().teleport(new Location(Bukkit.getWorld("world"), 0, 252, 0));
             e.getPlayer().setGameMode(GameMode.ADVENTURE);
         }
+        else {
+            e.getPlayer().setGameMode(GameMode.SPECTATOR);
+            e.getPlayer().teleport(new Location(Bukkit.getWorld("world"), 0, 252, 0));
+        }
         if(!dataBase.isPlayer(e.getPlayer())) dataBase.addPlayer(e.getPlayer());
         teamManager.updatePlayer(e.getPlayer());
     }
@@ -264,6 +277,47 @@ public class events implements Listener{
         if(gameConfig.gamePhase < 3 && player.getInventory().getItemInMainHand().equals(new ItemStack(Material.WHITE_BANNER))) {
             e.setCancelled(true);
             if(!gameConfig.team_freezed) teams.openInventory(player);
+            return;
+        }
+        if(gameConfig.gamePhase > 2 && gameConfig.gamePhase < 5 && player.getInventory().getItemInMainHand().equals(gameConfig.compas)) {
+            e.setCancelled(true);
+            if(e.getHand() == EquipmentSlot.HAND) return;
+            String name = player.getName();
+            log.info("La valeur de lastY : " + main.lastY.getScore(name).getScore());
+            log.info("Valeur de number of teams : " + gameConfig.numberTeams);
+            log.info("Valeur de listCenters : " + gameConfig.roomsLocations.toString());
+            if(main.lastY.getScore(name).getScore() < 0) {
+                Location location = player.getLocation();
+                main.lastX.getScore(name).setScore(location.getBlockX());
+                main.lastY.getScore(name).setScore(location.getBlockY());
+                main.lastZ.getScore(name).setScore(location.getBlockZ());
+                String worldName = location.getWorld().getName();
+                int intWorld;
+                if(worldName.equals("world")) {
+                    intWorld = 0;
+                }
+                else if(worldName.equals("world_nether")) {
+                    intWorld = -1;
+                }
+                else {
+                    intWorld = 1;
+                }
+                log.info("Contenu de playerLinkedTeam : " + main.board.getEntryTeam(name).getName());
+                main.lastWorld.getScore(name).setScore(intWorld);
+                player.teleport(gameConfig.roomsLocations.get(main.board.getEntryTeam(name).getName()));
+            }
+            else {
+                log.info("Coucou on est dans le else tu tp");
+                World world;
+                int intWorld = main.lastWorld.getScore(name).getScore();
+                if(intWorld == -1) world = Bukkit.getWorld("world_nether");
+                else if(intWorld == 0) world = Bukkit.getWorld("world");
+                else world = Bukkit.getWorld("world_the_end");
+                
+                Location destination = new Location(world, main.lastX.getScore(name).getScore()+0.5, main.lastY.getScore(name).getScore(), main.lastZ.getScore(name).getScore()+0.5);
+                main.lastY.getScore(name).setScore(-10);
+                player.teleport(destination);
+            }
         }
     }
     
@@ -280,12 +334,17 @@ public class events implements Listener{
     @EventHandler
     public static void onPlaceBlock(BlockPlaceEvent e) {
         //Managing block placemement in RoomBlocks
-        if(gameConfig.gamePhase == 3) {
+        if(gameConfig.gamePhase == 4) {
             Block block = e.getBlockPlaced();
             Location location = block.getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
-            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 250) {
+            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 248) {
                 World world = Bukkit.getWorld("world");
+                Location locPillar = location.clone().add(0,-1,0);
+                if(!world.getBlockAt(locPillar).getType().equals(Material.QUARTZ_PILLAR)) {
+                    e.setCancelled(true);
+                    return;
+                }
                 Material checkMaterial;
                 ArrayList<Location> checkLocations = new ArrayList<>();
                 checkLocations.add(new Location(world, x + 1, 250, z));
@@ -310,8 +369,41 @@ public class events implements Listener{
     }
     
     @EventHandler
+    public static void onBreakBlock(BlockBreakEvent e) {
+        if(!e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && (gameConfig.gamePhase ==3 || gameConfig.gamePhase ==4)) {
+            Location location = e.getPlayer().getLocation();
+            int x = (int) location.getX(), z = (int) location.getZ();
+            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 248) {
+                e.setCancelled(true);
+            }
+        }
+    }
+    
+    @EventHandler
+    public static void onEmptyBucket(PlayerBucketEmptyEvent e) {
+        if(!e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && (gameConfig.gamePhase ==3 || gameConfig.gamePhase ==4)) {
+            Location location = e.getPlayer().getLocation();
+            int x = (int) location.getX(), z = (int) location.getZ();
+            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 248) {
+                e.setCancelled(true);
+            }
+        }
+    }
+    
+    @EventHandler
+    public static void onFillBucket(PlayerBucketFillEvent e) {
+        if(!e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && (gameConfig.gamePhase ==3 || gameConfig.gamePhase ==4)) {
+            Location location = e.getPlayer().getLocation();
+            int x = (int) location.getX(), z = (int) location.getZ();
+            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 248) {
+                e.setCancelled(true);
+            }
+        }
+    }
+    
+    @EventHandler
     public static void onClickEntity(PlayerInteractEntityEvent e) {
-        if(gameConfig.gamePhase == 3) {
+        if(gameConfig.gamePhase == 4) {
             Player player = e.getPlayer();
             Entity entity = e.getRightClicked();
             Location location = entity.getLocation();
@@ -344,7 +436,7 @@ public class events implements Listener{
     
     @EventHandler
     public static void onChangePlayerHunger(FoodLevelChangeEvent e) {
-        if(gameConfig.gamePhase < 3 && e.getEntity() instanceof Player) {
+        if(gameConfig.gamePhase < 4 && e.getEntity() instanceof Player) {
             e.setCancelled(true);
             e.getEntity().setFoodLevel(20);
         }
@@ -352,8 +444,15 @@ public class events implements Listener{
     
     @EventHandler
     public static void onChangePlayerHealth(EntityDamageEvent e) {
-        if(gameConfig.gamePhase < 3 && e.getEntity() instanceof Player) {
+        if(gameConfig.gamePhase < 4 && e.getEntity() instanceof Player) {
             e.setCancelled(true);
+        }
+    }
+    
+    @EventHandler
+    public static void onRespawnPlayer(PlayerRespawnEvent e) {
+        if(gameConfig.gamePhase < 5 && gameConfig.gamePhase > 2) {
+            gameConfig.giveCompas(e.getPlayer());
         }
     }
     
