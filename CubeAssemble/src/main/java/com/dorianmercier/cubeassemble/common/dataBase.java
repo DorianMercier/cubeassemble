@@ -13,11 +13,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 
 /**
@@ -311,5 +312,67 @@ public class dataBase {
         catch(SQLException e) {
             log.error("Database : Cannot set previousNumberItems");
         }
+    }
+    
+    public static void saveStartInventory(Inventory inv) {
+        ItemStack[] content = inv.getContents();
+        int k=0;
+        try {
+            PreparedStatement st = con.prepareStatement("delete from start_inventory");
+            st.execute();
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot void table start_inventory");
+            return;
+        }
+        
+        try {
+            for(ItemStack itemStack : content) {
+                PreparedStatement st = con.prepareStatement("insert into start_inventory values(?, ?, ?)");
+                st.setInt(1, k++);
+                if(itemStack == null) {
+                    st.setString(2, "null");
+                    st.setInt(3, 0);
+                }
+                else {
+                    st.setString(2, itemStack.getType().toString());
+                    st.setInt(3, itemStack.getAmount());
+                }
+                st.execute();
+            }
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot save start inventory : " + e);
+        }
+    }
+    
+    public static Inventory loadInventory() {
+        Inventory inv = Bukkit.createInventory(null, InventoryType.PLAYER);
+        
+        ItemStack[] contents = new ItemStack[41];
+        ItemStack currItem;
+        int k=0;
+        
+        try {
+            PreparedStatement st = con.prepareStatement("select * from start_inventory order by key asc");
+            ResultSet rs = st.executeQuery();
+            while(rs.next()) {
+                if(rs.getString(2).equals("null")) contents[k++] = null;
+                else {
+                    log.info("current item : " + Material.getMaterial(rs.getString(2)));
+                    currItem = new ItemStack(Material.getMaterial(rs.getString(2)), rs.getInt(3));
+                    contents[k++] = currItem;
+                }
+            }
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot load start inventory : " + e);
+        }
+        
+        if(k!=0) {
+            inv.setContents(contents);
+        }
+        
+        return inv;
     }
 }

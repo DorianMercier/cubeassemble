@@ -13,7 +13,7 @@ public final class main extends JavaPlugin {
     //Creating teams
     public static ScoreboardManager manager;
     public static Scoreboard board;
-    public static Objective score;
+    public static Objective config;
 
     public static Team blue;
     public static Team red;
@@ -44,6 +44,10 @@ public final class main extends JavaPlugin {
         this.getCommand("test").setExecutor(new cubeAssembleCommandExecutor(this));
         this.getCommand("ready").setExecutor(new cubeAssembleCommandExecutor(this));
         this.getCommand("start").setExecutor(new cubeAssembleCommandExecutor(this));
+        this.getCommand("finish").setExecutor(new cubeAssembleCommandExecutor(this));
+        this.getCommand("reset").setExecutor(new cubeAssembleCommandExecutor(this));
+        this.getCommand("inv").setExecutor(new cubeAssembleCommandExecutor(this));
+        this.getCommand("save").setExecutor(new cubeAssembleCommandExecutor(this));
         
         //Initializing inventories
         new setup();
@@ -58,6 +62,14 @@ public final class main extends JavaPlugin {
         //Initializing teams
         teamManager.initTeams();
         gameConfig.loadConfig();
+        
+        //Creating config scoreboard
+        config = board.getObjective("config");
+        if(config == null) {
+            config = board.registerNewObjective("config", "dummy", "config");
+            config.getScore("gamePhase").setScore(0);
+        }
+        gameConfig.gamePhase = config.getScore("gamePhase").getScore();
     }
 
     @Override

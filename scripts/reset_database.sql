@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS general_config cascade;
 DROP TABLE IF EXISTS teams cascade;
 DROP TABLE IF EXISTS players cascade;
 DROP TABLE IF EXISTS blocks cascade;
+DROP TABLE IF EXISTS start_inventory cascade;
 
 create table general_config(
     key varchar(64) constraint primary_key_general_config primary key,
@@ -28,6 +29,12 @@ create table blocks(
     points integer not null
 );
 
+create table start_inventory(
+    key integer constraint primary_key_start_inventory primary key,
+    material varchar(64),
+    count integer
+);
+
 insert into teams values(default, 'Bleu', 0);
 insert into teams values(default, 'Rouge', 0);
 insert into teams values(default, 'Vert', 0);
@@ -42,3 +49,4 @@ insert into general_config values('numberTeams', 2);
 insert into general_config values('teamsFreezed', 0);
 insert into general_config values('previousNumberTeams', 2);
 insert into general_config values('previousNumberItems', 0);
+insert into general_config values('gamePhase', 0);

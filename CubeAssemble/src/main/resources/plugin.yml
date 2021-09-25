@@ -34,4 +34,24 @@ commands:
        usage: /<command>
        permission: op
        permission-message: You don't have <permission>
+   finish:
+       description: CubeAssemble command to end the game
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   reset:
+       description: CubeAssemble command to reset scores and teams once the game is finished
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   inv:
+       description: CubeAssemble command to configure start inventory
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   save:
+       description: CubeAssemble command to save start inventory
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
      

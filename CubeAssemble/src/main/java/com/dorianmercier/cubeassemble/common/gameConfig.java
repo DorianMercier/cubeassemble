@@ -27,10 +27,15 @@ public class gameConfig {
     
     public static final String version = "v2.0";
     
+    public static int gamePhase = 0;
+    
     public static String[] teamsColors = {"Vert", "Jaune", "Orange", "Rose", "Noir", "Gris", "Cyan"};
     
     public static int previousNumberTeams;
     public static int previousNumberItems;
+    
+    public static ArrayList<Player> canClick = new ArrayList<>();
+    public static ArrayList<Player> onInvConfig = new ArrayList<>();
     
     public static int numberTeams;
     //Freeze teams and do not allow player to change their team (moderator can still change player's team)
@@ -112,6 +117,11 @@ public class gameConfig {
             log.info("Loading the config for the block " + material.toString());
         }
         updateInventoriesBlocksConfig();
+    }
+    
+    public static void setGamePhase(int phase) {
+        gamePhase = phase;
+        main.config.getScore("gamePhase").setScore(phase);
     }
     
     public static boolean addBlock(Material material) {
