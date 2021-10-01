@@ -359,7 +359,6 @@ public class dataBase {
             while(rs.next()) {
                 if(rs.getString(2).equals("null")) contents[k++] = null;
                 else {
-                    log.info("current item : " + Material.getMaterial(rs.getString(2)));
                     currItem = new ItemStack(Material.getMaterial(rs.getString(2)), rs.getInt(3));
                     contents[k++] = currItem;
                 }

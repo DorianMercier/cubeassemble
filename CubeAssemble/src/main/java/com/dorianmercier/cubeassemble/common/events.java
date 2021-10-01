@@ -257,15 +257,19 @@ public class events implements Listener{
     
     @EventHandler
     public static void onJoinPlayer(final PlayerJoinEvent e) {
+        Player player = e.getPlayer();
         if(gameConfig.gamePhase < 3) {
-            e.getPlayer().getInventory().clear();
-            e.getPlayer().getInventory().setItem(0, new ItemStack(Material.WHITE_BANNER, 1));
-            e.getPlayer().teleport(new Location(Bukkit.getWorld("world"), 0, 252, 0));
-            e.getPlayer().setGameMode(GameMode.ADVENTURE);
+            player.getInventory().clear();
+            player.getInventory().setItem(0, new ItemStack(Material.WHITE_BANNER, 1));
+            player.teleport(new Location(Bukkit.getWorld("world"), 0, 252, 0));
+            player.setGameMode(GameMode.ADVENTURE);
         }
         else {
-            e.getPlayer().setGameMode(GameMode.SPECTATOR);
-            e.getPlayer().teleport(new Location(Bukkit.getWorld("world"), 0, 252, 0));
+            String teamName = gameConfig.playerLinkedTeam.get(player.getName());
+            if(teamName == null) {
+                e.getPlayer().setGameMode(GameMode.SPECTATOR);
+                e.getPlayer().teleport(new Location(Bukkit.getWorld("world"), 0, 252, 0));
+            }
         }
         if(!dataBase.isPlayer(e.getPlayer())) dataBase.addPlayer(e.getPlayer());
         teamManager.updatePlayer(e.getPlayer());
@@ -283,9 +287,6 @@ public class events implements Listener{
             e.setCancelled(true);
             if(e.getHand() == EquipmentSlot.HAND) return;
             String name = player.getName();
-            log.info("La valeur de lastY : " + main.lastY.getScore(name).getScore());
-            log.info("Valeur de number of teams : " + gameConfig.numberTeams);
-            log.info("Valeur de listCenters : " + gameConfig.roomsLocations.toString());
             if(main.lastY.getScore(name).getScore() < 0) {
                 Location location = player.getLocation();
                 main.lastX.getScore(name).setScore(location.getBlockX());
@@ -307,7 +308,6 @@ public class events implements Listener{
                 player.teleport(gameConfig.roomsLocations.get(main.board.getEntryTeam(name).getName()));
             }
             else {
-                log.info("Coucou on est dans le else tu tp");
                 World world;
                 int intWorld = main.lastWorld.getScore(name).getScore();
                 if(intWorld == -1) world = Bukkit.getWorld("world_nether");

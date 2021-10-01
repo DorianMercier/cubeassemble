@@ -1,6 +1,7 @@
 package com.dorianmercier.cubeassemble.common;
 
 import com.dorianmercier.cubeassemble.inventories.*;
+import com.dorianmercier.cubeassemble.threads.scoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Objective;
@@ -91,12 +92,17 @@ public final class main extends JavaPlugin {
             lastWorld = board.registerNewObjective("lastWorld", "dummy", "lastWorld");
         }
         gameConfig.gamePhase = config.getScore("gamePhase").getScore();
+        
+        //Starting scoreboard update
+        if(gameConfig.gamePhase == 3 || gameConfig.gamePhase == 4) {
+            scoreboard.start(this, board.getObjective("config").getScore("time").getScore());
+        }
+      
     }
 
     @Override
     public void onDisable() {
         log.info("onDisable has been invoked!");
-        //Deleting scoreboards created
        
         dataBase.disconnect();
     }
