@@ -31,6 +31,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -284,6 +285,7 @@ public class events implements Listener{
             return;
         }
         if(gameConfig.gamePhase > 2 && gameConfig.gamePhase < 5 && player.getInventory().getItemInMainHand().equals(gameConfig.compas)) {
+            if(e.getAction().equals(Action.PHYSICAL) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)) return;
             e.setCancelled(true);
             if(e.getHand() == EquipmentSlot.HAND) return;
             String name = player.getName();
@@ -409,6 +411,9 @@ public class events implements Listener{
             Location location = entity.getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
             if(entity instanceof ItemFrame && abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 250) {
+                ItemFrame clickedFrame = (ItemFrame) entity;
+                log.info("Item contenu : " + clickedFrame.getItem());
+                if(clickedFrame.getItem().getType() != Material.AIR) return;
                 Material currentMaterial = player.getInventory().getItemInMainHand().getType();
                 World world = Bukkit.getWorld("world");
                 Material checkMaterial;
