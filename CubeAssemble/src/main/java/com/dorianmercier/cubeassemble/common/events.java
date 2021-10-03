@@ -170,7 +170,8 @@ public class events implements Listener{
             switch (clickedItem.getType()) {
                 case STONE:
                     gameConfig.canClick.add(player);
-                    blocksInventory.openInventory(player);
+                    gameConfig.invBlocks.get(0).openInventory(player);
+                    gameConfig.currentBlocksPage.put(player, 1);
                     break;
                 case GOLD_INGOT:
                     gameConfig.invBlockConfig.get(0).openInventory(player);
@@ -228,6 +229,27 @@ public class events implements Listener{
                 gameConfig.invBlockConfig.get(currentPage + 1).openInventory(player);
                 gameConfig.currentConfigPage.put(player, currentPage + 1);
                 return;
+            }
+        }
+        if(gameConfig.arrayContainsBlocksInventory(inv)) {
+            int k = e.getSlot();
+            if(k >= 45 && k < 54) {
+                e.setCancelled(true);
+                if(clickedItem.getType().equals(Material.ARROW)) {
+                    int currentPage = gameConfig.currentBlocksPage.get(player);
+                    if(currentPage == 1) {
+                        blockMenue.openInventory(player);
+                    }
+                    else {
+                        gameConfig.invBlocks.get(currentPage - 2).openInventory(player);
+                        gameConfig.currentBlocksPage.put(player, currentPage - 1);
+                    }
+                }
+                else if(clickedItem.getType().equals(Material.MAGENTA_GLAZED_TERRACOTTA)) {
+                    int currentPage = gameConfig.currentBlocksPage.get(player);
+                    gameConfig.invBlocks.get(currentPage).openInventory(player);
+                    gameConfig.currentBlocksPage.put(player, currentPage + 1);
+                }
             }
         }
     }
@@ -325,11 +347,8 @@ public class events implements Listener{
     
     @EventHandler
     public static void onCloseInventory(InventoryCloseEvent e) {
-        if(e.getInventory().equals(blocksInventory.inv)) {
-            log.info("The player " + e.getPlayer().getName() + " updated the required blocks");
-            gameConfig.updateBlocksConfig(e.getInventory());
-            gameConfig.updateInventoriesBlocksConfig();
-            gameConfig.canClick.remove((Player) e.getPlayer());
+        if(gameConfig.arrayContainsBlocksInventory(e.getInventory())) {
+            updateBlocks((Player) e.getPlayer());
         }
     }
     
@@ -340,7 +359,7 @@ public class events implements Listener{
             Block block = e.getBlockPlaced();
             Location location = block.getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
-            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 248) {
+            if(abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 248) {
                 World world = Bukkit.getWorld("world");
                 Location locPillar = location.clone().add(0,-1,0);
                 if(!world.getBlockAt(locPillar).getType().equals(Material.QUARTZ_PILLAR)) {
@@ -375,7 +394,7 @@ public class events implements Listener{
         if(!e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && (gameConfig.gamePhase ==3 || gameConfig.gamePhase ==4)) {
             Location location = e.getPlayer().getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
-            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 248) {
+            if(abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 248) {
                 e.setCancelled(true);
             }
         }
@@ -410,9 +429,8 @@ public class events implements Listener{
             Entity entity = e.getRightClicked();
             Location location = entity.getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
-            if(entity instanceof ItemFrame && abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 250) {
+            if(entity instanceof ItemFrame && abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 250) {
                 ItemFrame clickedFrame = (ItemFrame) entity;
-                log.info("Item contenu : " + clickedFrame.getItem());
                 if(clickedFrame.getItem().getType() != Material.AIR) return;
                 Material currentMaterial = player.getInventory().getItemInMainHand().getType();
                 World world = Bukkit.getWorld("world");
@@ -473,6 +491,13 @@ public class events implements Listener{
     
     private static int distance(Location loc1, Location loc2) {
         return max(abs((int) (loc1.getX() - loc2.getX())), abs((int) (loc1.getZ() - loc2.getZ())));
+    }
+    
+    private static void updateBlocks(Player player) {
+        log.info("The player " + player.getName() + " updated the required blocks");
+        gameConfig.updateBlocksConfig();
+        gameConfig.updateInventoriesBlocksConfig();
+        gameConfig.canClick.remove(player);
     }
 }
 

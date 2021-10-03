@@ -104,6 +104,12 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             gameConfig.hostList.add(sender.getName());
             dataBase.addhost((Player) sender);
             
+            Location location = new Location(Bukkit.getWorld("world"), 0, 252, 0);
+            for(Player player : Bukkit.getOnlinePlayers()) {
+                player.teleport(location);
+                player.setGameMode(GameMode.ADVENTURE);
+            }
+            
             setGamePhase(1);
             
             //Building the spawn

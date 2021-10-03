@@ -59,7 +59,6 @@ public final class main extends JavaPlugin {
         new setup();
         new setup_teams();
         new teams();
-        new blocksInventory();
         new blockMenue();
         
         //Initalizing eventsHandlers

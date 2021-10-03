@@ -133,7 +133,7 @@ public class blockRooms {
                 double x = elocation.getX();
                 double Y = elocation.getY();
                 double z = elocation.getZ();
-                if((e instanceof Item || e instanceof ItemFrame) && abs(x) <= 100 && abs(z) <= 100 && z < 240) e.remove();
+                if((e instanceof Item || e instanceof ItemFrame) && abs(x) <= 160 && abs(z) <= 160 && z < 240) e.remove();
             }
         }
     }
@@ -318,8 +318,8 @@ public class blockRooms {
         for(int k=0; k<nbTeams; k++) {
             center = new ArrayList<>();
             angle = (2*PI/nbTeams)*k;
-            center.add((int) ceil(cos(angle)*80));
-            center.add((int) ceil(sin(angle)*80));
+            center.add((int) ceil(cos(angle)*120));
+            center.add((int) ceil(sin(angle)*120));
             result.add(center);
         }
         return result;

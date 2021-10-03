@@ -52,12 +52,15 @@ public class gameConfig {
     public static HashMap<String, String> playerLinkedTeam;
     //All blocks needed for the game and their points are referenced here
     public static LinkedHashMap<Material, Integer> blocksConfig = new LinkedHashMap<>();
-    //List of all inventories containing blocks needed (only one inventory is supported for now)
+    //List of all inventories containing blocks needed
     public static ArrayList<blocksInventory> invBlocks = new ArrayList<>();
     //List of inventories in order to configure points of blocks
     public static ArrayList<blockConfigInventory> invBlockConfig = new ArrayList<>();
     //Current page of invBlockConfig where players are currently. Usefull to know the next and previous page
     public static HashMap<Player, Integer> currentConfigPage = new HashMap<>();
+    
+    //Current page of invBlocks where players are currently. Usefull to know the next and previous page
+    public static HashMap<Player, Integer> currentBlocksPage = new HashMap<>();
     
     public static ArrayList<Material> nonCompatible = new ArrayList<>();
     
@@ -101,6 +104,9 @@ public class gameConfig {
         compasMeta.setLore(lore);
         compasMeta.setDisplayName("Outil de téléportation");
         compas.setItemMeta(compasMeta);
+        
+        //Initialize inventories containig required blocks
+        for(int k=0; k<5; k++) invBlocks.add(new blocksInventory());
     }
     
     public static void loadConfig() {
@@ -131,7 +137,7 @@ public class gameConfig {
         blocksConfig = dataBase.getblocksConfig();
         int k=0;
         for(Material material : blocksConfig.keySet()) {
-            tools.createDisplay(material, 1, blocksInventory.inv, k, material.toString(), "");
+            tools.createDisplay(material, 1, invBlocks.get(k/45).inv, k%45, material.toString(), "");
             k++;
             log.info("Loading the config for the block " + material.toString());
         }
@@ -166,15 +172,15 @@ public class gameConfig {
         return blocksConfig.get(material);
     }
     
-    public static void updateBlocksConfig(Inventory bInv) {
+    public static void updateBlocksConfig() {
         blockConfigInventory.nbInventories = 0;
         LinkedHashMap<Material, Integer> blocksConfigUpdated = new LinkedHashMap<>();
         dataBase.voidBlocks();
         Material currMaterial;
         ItemStack itemstack;
         int currPoint;
-        for(int k=0; k<54; k++) {
-            itemstack = bInv.getItem(k);
+        for(int k=0; k<225; k++) {
+            itemstack = gameConfig.invBlocks.get(k/45).inv.getItem(k%45);
             if(itemstack != null) {
                 currMaterial = itemstack.getType();
                 if(blocksConfig.containsKey(itemstack.getType())) {
@@ -190,6 +196,13 @@ public class gameConfig {
     
     public static boolean arrayContainsInventory(Inventory inventory) {
         for(blockConfigInventory invb : invBlockConfig) {
+            if(invb.inv.equals(inventory)) return true;
+        }
+        return false;
+    }
+    
+    public static boolean arrayContainsBlocksInventory(Inventory inventory) {
+        for(blocksInventory invb : invBlocks) {
             if(invb.inv.equals(inventory)) return true;
         }
         return false;
