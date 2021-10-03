@@ -1,14 +1,62 @@
 name: CubeAssemble
-main: com.dorianmercier.cubeassemble.main
-version: 2.0
-
-name: Basic
 main: com.dorianmercier.cubeassemble.common.main
-version: 1.0
-author: <your IGN or name>
+version: 2.0
+api-version: 1.17
+
 commands:
-   basic:
-      description: This is a demo command.
-      usage: /<command> [player]
-      permission: <plugin name>.basic
+   init:
+      description: CubeAssemble command to initialize the game.
+      usage: /<command>
+      permission: op
       permission-message: You don't have <permission>
+   clean:
+      description: CubeAssemble command to clean the game.
+      usage: /<command>
+      permission: op
+      permission-message: You don't have <permission>
+   setup:
+       description: CubeAssemble command to get setup mode
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   test:
+       description: CubeAssemble test command
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   ready:
+       description: CubeAssemble command to reload blocks plateforms
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   start:
+       description: CubeAssemble command to start the game
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   finish:
+       description: CubeAssemble command to end the game
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   reset:
+       description: CubeAssemble command to reset scores and teams once the game is finished
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   inv:
+       description: CubeAssemble command to configure start inventory
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   save:
+       description: CubeAssemble command to save start inventory
+       usage: /<command>
+       permission: op
+       permission-message: You don't have <permission>
+   giveCompass:
+       description: CubeAssemble command give the teleportation tool to the player
+       usage: /<command> <player>
+       permission: op
+       permission-message: You don't have <permission>
+     
