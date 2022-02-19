@@ -38,33 +38,33 @@ public final class spawn {
         //Building the floor
         for(x = -11; x <= 11; x++) {
             for(z = -11; z <= 11; z++) {
-                world.getBlockAt(x, 250, z).setType(materialFloor);
+                world.getBlockAt(x, 310, z).setType(materialFloor);
             }
         }
         
         log.info("Processing walls");
         //Building walls
-        for(y=251; y<= 253; y++) {
+        for(y=311; y<= 313; y++) {
             for(z=-10; z<=10; z++) {
                 world.getBlockAt(11,y,z).setType(materialWall,true);
             }
         }
-        for(y=251; y<= 253; y++) {
+        for(y=311; y<= 313; y++) {
             for(x=-10; x<=10; x++) {
                 world.getBlockAt(x,y,11).setType(materialWall,true);
             }
         }
-        for(y=251; y<= 253; y++) {
+        for(y=311; y<= 313; y++) {
             for(z=-10; z<=10; z++) {
                 world.getBlockAt(-11,y,z).setType(materialWall,true);
             }
         }
-        for(y=251; y<= 253; y++) {
+        for(y=311; y<= 313; y++) {
             for(x=-10; x<=10; x++) {
                 world.getBlockAt(x,y,-11).setType(materialWall,true);
             }
         }
-        for(y=251;y<=253;y++) {
+        for(y=311;y<=313;y++) {
             //Placing corners at the end to ensure block connexions
             world.getBlockAt(-11,y,-11).setType(materialWall,true);
             world.getBlockAt(11,y,-11).setType(materialWall,true);

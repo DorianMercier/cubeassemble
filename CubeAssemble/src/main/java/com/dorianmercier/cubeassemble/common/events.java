@@ -8,7 +8,6 @@ package com.dorianmercier.cubeassemble.common;
 import static com.dorianmercier.cubeassemble.common.gameConfig.nonCompatible;
 import static com.dorianmercier.cubeassemble.common.gameConfig.setGamePhase;
 import com.dorianmercier.cubeassemble.inventories.blockMenue;
-import com.dorianmercier.cubeassemble.inventories.blocksInventory;
 import com.dorianmercier.cubeassemble.inventories.setup;
 import com.dorianmercier.cubeassemble.inventories.setup_teams;
 import com.dorianmercier.cubeassemble.inventories.teams;
@@ -40,7 +39,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -284,14 +282,14 @@ public class events implements Listener{
         if(gameConfig.gamePhase < 3) {
             player.getInventory().clear();
             player.getInventory().setItem(0, new ItemStack(Material.WHITE_BANNER, 1));
-            player.teleport(new Location(Bukkit.getWorld("world"), 0, 252, 0));
+            player.teleport(new Location(Bukkit.getWorld("world"), 0, 312, 0));
             player.setGameMode(GameMode.ADVENTURE);
         }
         else {
             String teamName = gameConfig.playerLinkedTeam.get(player.getName());
             if(teamName == null) {
                 e.getPlayer().setGameMode(GameMode.SPECTATOR);
-                e.getPlayer().teleport(new Location(Bukkit.getWorld("world"), 0, 252, 0));
+                e.getPlayer().teleport(new Location(Bukkit.getWorld("world"), 0, 312, 0));
             }
         }
         if(!dataBase.isPlayer(e.getPlayer())) dataBase.addPlayer(e.getPlayer());
@@ -359,32 +357,8 @@ public class events implements Listener{
             Block block = e.getBlockPlaced();
             Location location = block.getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
-            if(abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 248) {
-                World world = Bukkit.getWorld("world");
-                Location locPillar = location.clone().add(0,-1,0);
-                if(!world.getBlockAt(locPillar).getType().equals(Material.QUARTZ_PILLAR)) {
-                    e.setCancelled(true);
-                    return;
-                }
-                Material checkMaterial;
-                ArrayList<Location> checkLocations = new ArrayList<>();
-                checkLocations.add(new Location(world, x + 1, 250, z));
-                checkLocations.add(new Location(world, x - 1, 250, z));
-                checkLocations.add(new Location(world, x, 250, z + 1));
-                checkLocations.add(new Location(world, x, 250, z - 1));
-                int k=0;
-                for(Location checkLocation : checkLocations) {
-                   checkMaterial = world.getBlockAt(checkLocation).getType();
-                   if(!nonCompatible.contains(checkMaterial) && checkMaterial.equals(block.getType())) break;
-                   else k++;
-                }
-                if(k==4) {
-                    //No block correspond to the description, cancel the event
-                    e.setCancelled(true);
-                    return;
-                }
-                //Ading the points to the corresponding team
-                obtainItem(e.getPlayer(), block.getType());
+            if(abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 309) {
+                e.setCancelled(true);
             }
         }
     }
@@ -394,7 +368,7 @@ public class events implements Listener{
         if(!e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && (gameConfig.gamePhase ==3 || gameConfig.gamePhase ==4)) {
             Location location = e.getPlayer().getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
-            if(abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 248) {
+            if(abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 309) {
                 e.setCancelled(true);
             }
         }
@@ -405,7 +379,7 @@ public class events implements Listener{
         if(!e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && (gameConfig.gamePhase ==3 || gameConfig.gamePhase ==4)) {
             Location location = e.getPlayer().getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
-            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 248) {
+            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 309) {
                 e.setCancelled(true);
             }
         }
@@ -416,7 +390,7 @@ public class events implements Listener{
         if(!e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && (gameConfig.gamePhase ==3 || gameConfig.gamePhase ==4)) {
             Location location = e.getPlayer().getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
-            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 248) {
+            if(abs(x) < 100 && abs(z) < 100 && abs(location.getY()) > 309) {
                 e.setCancelled(true);
             }
         }
@@ -429,7 +403,7 @@ public class events implements Listener{
             Entity entity = e.getRightClicked();
             Location location = entity.getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
-            if(entity instanceof ItemFrame && abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 250) {
+            if(entity instanceof ItemFrame && abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 310) {
                 ItemFrame clickedFrame = (ItemFrame) entity;
                 if(clickedFrame.getItem().getType() != Material.AIR) return;
                 Material currentMaterial = player.getInventory().getItemInMainHand().getType();

@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.dorianmercier</groupId>
 	<artifactId>cubeassemble</artifactId>
-	<version>2.0</version>
+	<version>2.2</version>
 	<name>CubeAssemble</name>
 	<description>Minecraft plugin for CubeAssemble game</description>
 	<build>
@@ -50,13 +50,13 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.17.1-R0.1-SNAPSHOT</version>
+			<version>1.18.1-R0.1-SNAPSHOT</version>
 		</dependency>
                 <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>42.2.23</version>
+                    <version>42.3.3</version>
                 </dependency>
 
 	</dependencies>

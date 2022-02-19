@@ -229,7 +229,7 @@ public class gameConfig {
         int k = 0;
         String[] teamsNames = {"Bleu", "Rouge", "Vert", "Jaune", "Orange", "Rose", "Noir", "Gris", "Cyan"};
         for(ArrayList<Integer> list : listCenters) {
-            location = new Location(Bukkit.getWorld("world"), list.get(0), 252, list.get(1));
+            location = new Location(Bukkit.getWorld("world"), list.get(0), 312, list.get(1));
             roomsLocations.put(teamsNames[k++], location);
         }
     }
