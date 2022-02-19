@@ -21,7 +21,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
@@ -88,7 +87,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
                 return true;
             }
             
-            if(world.setSpawnLocation(0,251,0)) {
+            if(world.setSpawnLocation(0,311,0)) {
                 log.info("World spawn changed successfully to 0 0");
             }
             else {
@@ -104,7 +103,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             gameConfig.hostList.add(sender.getName());
             dataBase.addhost((Player) sender);
             
-            Location location = new Location(Bukkit.getWorld("world"), 0, 252, 0);
+            Location location = new Location(Bukkit.getWorld("world"), 0, 312, 0);
             for(Player player : Bukkit.getOnlinePlayers()) {
                 player.teleport(location);
                 player.setGameMode(GameMode.ADVENTURE);
@@ -210,7 +209,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             for(Player player : Bukkit.getOnlinePlayers()) {
                 if(gameConfig.playerLinkedTeam.containsKey(player.getName())) {
                     player.setGameMode(GameMode.SURVIVAL);
-                    player.teleport(new Location(world, 0, 250, 0));
+                    player.teleport(new Location(world, 0, 310, 0));
                     startInventory.assign(player);
                     gameConfig.giveCompas(player);
                     main.lastY.getScore(player.getName()).setScore(-1);
@@ -265,7 +264,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             }
             for(Player player : Bukkit.getOnlinePlayers()) {
                 player.setGameMode(GameMode.ADVENTURE);
-                player.teleport(new Location(world, 0, 252, 0));
+                player.teleport(new Location(world, 0, 312, 0));
                 player.getInventory().clear();
                 player.getInventory().setItem(0, new ItemStack(Material.WHITE_BANNER, 1));
             }

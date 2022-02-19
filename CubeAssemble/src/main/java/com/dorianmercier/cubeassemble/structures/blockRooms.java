@@ -53,7 +53,7 @@ public class blockRooms {
         Location location;
         int k=0;
         for(ArrayList<Integer> center : centers) {
-            location = new Location(Bukkit.getWorld("world"), center.get(0), 250, center.get(1));
+            location = new Location(Bukkit.getWorld("world"), center.get(0), 310, center.get(1));
             Material floor, glass, pillar, barrier, light;
             if(build) {
                 pillar = Material.QUARTZ_PILLAR;
@@ -131,15 +131,14 @@ public class blockRooms {
             for(Entity e : world.getEntities()) {
                 Location elocation = e.getLocation();
                 double x = elocation.getX();
-                double Y = elocation.getY();
+                double y = elocation.getY();
                 double z = elocation.getZ();
-                if((e instanceof Item || e instanceof ItemFrame) && abs(x) <= 160 && abs(z) <= 160 && z < 240) e.remove();
+                if((e instanceof Item || e instanceof ItemFrame) && abs(x) <= 160 && abs(z) <= 160 && y > 308) e.remove();
             }
         }
     }
     
     private static void placeBlocks(Location center, int size, ArrayList<Map.Entry<Material, Integer>> listBlocks, int nbBlocks) {
-        World world = Bukkit.getWorld("world");
         int x, z, z_init, x_init, k = 0;
         x = (int) (center.getX() + floor(size)/2 - 1);
         z_init = (int) (center.getZ() + floor(size)/2 -2);
@@ -189,44 +188,39 @@ public class blockRooms {
     
     private static void generateItem(Material material, int x, int z, Rotation rotation) {
         World world = Bukkit.getWorld("world");
-        try {
-                world.getBlockAt(x, 250, z).setType(material, false);
-        }
-        catch(Exception e) {
-            //The item is not a block, so we put it in an ItemFrame
-            ItemFrame frame = (ItemFrame) world.spawn(world.getBlockAt(x, 251, z).getLocation(), ItemFrame.class);
-            frame.setItem(new ItemStack(material));
-            frame.setFacingDirection(BlockFace.UP);
-            frame.setInvulnerable(true);
-            frame.setFixed(true);
-            frame.setRotation(rotation);
+        //The item is not a block, so we put it in an ItemFrame
+        ItemFrame frame = (ItemFrame) world.spawn(world.getBlockAt(x, 311, z).getLocation(), ItemFrame.class);
+        frame.setItem(new ItemStack(material));
+        frame.setFacingDirection(BlockFace.UP);
+        frame.setInvulnerable(true);
+        frame.setFixed(true);
+        frame.setRotation(rotation);
 
-            //Placing an empty itemframe to put the item needed
-            //Choosing the right coordinate
-            switch(rotation) {
-                case CLOCKWISE:
-                    x++;
-                    break;
-                case NONE:
-                    z--;
-                    break;
-                case COUNTER_CLOCKWISE:
-                    x--;
-                    break;
-                default:
-                    z++;
-                    break;
-            }
-            frame = (ItemFrame) world.spawn(world.getBlockAt(x, 252, z).getLocation(), ItemFrame.class);
-            frame.setFacingDirection(BlockFace.UP);
-            frame.setInvulnerable(true);
+        //Placing an empty itemframe to put the item needed
+        //Choosing the right coordinate
+        switch(rotation) {
+            case CLOCKWISE:
+                x++;
+                break;
+            case NONE:
+                z--;
+                break;
+            case COUNTER_CLOCKWISE:
+                x--;
+                break;
+            default:
+                z++;
+                break;
         }
+        frame = (ItemFrame) world.spawn(world.getBlockAt(x, 312, z).getLocation(), ItemFrame.class);
+        frame.setFacingDirection(BlockFace.UP);
+        frame.setInvulnerable(true);
     }
     
     private static void generateSign(int x, int z, BlockFace face, String blockType, int points) {
         Sign sign;
         Block block;
-        block = Bukkit.getWorld("world").getBlockAt(x, 251, z);
+        block = Bukkit.getWorld("world").getBlockAt(x, 311, z);
         block.setType(Material.OAK_WALL_SIGN,false);
 
         sign = (Sign) block.getState();
@@ -252,20 +246,20 @@ public class blockRooms {
         if(z_init<0) z_init--;
         if(x<0) x--;
         for(z = z_init; z> z_init - size + 4; z-=2) {
-            world.getBlockAt(x, 251, z).setType(material);
-            world.getBlockAt(x, 253, z).setType(light);
-            world.getBlockAt(x - size + 1, 251, z).setType(material);
-            world.getBlockAt(x - size + 1, 253, z).setType(light);
+            world.getBlockAt(x, 311, z).setType(material);
+            world.getBlockAt(x, 313, z).setType(light);
+            world.getBlockAt(x - size + 1, 311, z).setType(material);
+            world.getBlockAt(x - size + 1, 313, z).setType(light);
         }
         z = (int) (center.getZ() - floor(size)/2);
         x_init = (int) (center.getX() + floor(size)/2 -2);
         if(z>0) z++;
         if(x_init<0) x_init--;
         for(x = x_init; x> x_init - size + 4; x-=2) {
-            world.getBlockAt(x, 251, z).setType(material);
-            world.getBlockAt(x, 253, z).setType(light);
-            world.getBlockAt(x, 251, z + size - 1).setType(material);
-            world.getBlockAt(x, 253, z + size - 1).setType(light);
+            world.getBlockAt(x, 311, z).setType(material);
+            world.getBlockAt(x, 313, z).setType(light);
+            world.getBlockAt(x, 311, z + size - 1).setType(material);
+            world.getBlockAt(x, 313, z + size - 1).setType(light);
         }
     }
     
@@ -275,35 +269,35 @@ public class blockRooms {
         //Generation floor
         for(x = (int) (center.getX() - floor(size/2)); x <= (int) (center.getX() + floor(size/2)); x++) {
             for(z = (int) (center.getZ() - floor(size/2)); z <= (int) (center.getZ() + floor(size/2)); z++) {
-                world.getBlockAt(x, 250, z).setType(material);
-                world.getBlockAt(x, 249, z).setType(materialBarrier);
+                world.getBlockAt(x, 310, z).setType(material);
+                world.getBlockAt(x, 309, z).setType(materialBarrier);
             }
         }
         //Generating walls
         x = (int) (center.getX() - floor(size/2) - 1);
         for(z = (int) (center.getZ() - floor(size/2)); z <= (int) (center.getZ() + floor(size/2)); z++) {
-            for(y=250; y<=255; y++) {
+            for(y=310; y<=315; y++) {
                 world.getBlockAt(x, y, z).setType(materialBarrier);
             }
         }
         
         x = (int) (center.getX() + floor(size/2) + 1);
         for(z = (int) (center.getZ() - floor(size/2)); z <= (int) (center.getZ() + floor(size/2)); z++) {
-            for(y=250; y<=255; y++) {
+            for(y=310; y<=315; y++) {
                 world.getBlockAt(x, y, z).setType(materialBarrier);
             }
         }
         
         z = (int) (center.getZ() - floor(size/2) - 1);
         for(x = (int) (center.getX() - floor(size/2)); x <= (int) (center.getX() + floor(size/2)); x++) {
-            for(y=250; y<=255; y++) {
+            for(y=310; y<=315; y++) {
                 world.getBlockAt(x, y, z).setType(materialBarrier);
             }
         }
         
         z = (int) (center.getZ() + floor(size/2) + 1);
         for(x = (int) (center.getX() - floor(size/2)); x <= (int) (center.getX() + floor(size/2)); x++) {
-            for(y=250; y<=255; y++) {
+            for(y=310; y<=315; y++) {
                 world.getBlockAt(x, y, z).setType(materialBarrier);
             }
         }
