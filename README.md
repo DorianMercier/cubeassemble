@@ -1,7 +1,7 @@
 # cubeassemble
-Minecraft 1.17.1 plugin for CubeAssemble game
+Minecraft 1.18.1 plugin for CubeAssemble game
 
-CubeAssemble version 2.0 is now on release !
+CubeAssemble version 2.2 is now on release !
 
 CubeAssemble is a minecraft mini-game created by ElD0d0 (Dorian Mercier) and this is the bukkit plugin associated.
 
