@@ -29,46 +29,62 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public class gameConfig {
     
-    public static final String version = "v2.0";
+    public static final String version = "v2.3";
     
-    public static int gamePhase = 0;
+    public static int gamePhase;
     
     public static String[] teamsColors = {"Vert", "Jaune", "Orange", "Rose", "Noir", "Gris", "Cyan"};
     
     public static int previousNumberTeams;
     public static int previousNumberItems;
     
-    public static ArrayList<Player> canClick = new ArrayList<>();
-    public static ArrayList<Player> onInvConfig = new ArrayList<>();
+    public static ArrayList<Player> canClick;
+    public static ArrayList<Player> onInvConfig;
     
     public static int numberTeams;
     //Freeze teams and do not allow player to change their team (moderator can still change player's team)
-    public static boolean team_freezed = false;
+    public static boolean team_freezed;
     //List of players authorized to perform config commands
-    public static ArrayList<String> hostList = new ArrayList<String>();
+    public static ArrayList<String> hostList;
     //List of teams and players
-    public static HashMap<String, ArrayList<String>> listTeams = new HashMap<>();
+    public static HashMap<String, ArrayList<String>> listTeams;
     
     public static HashMap<String, String> playerLinkedTeam;
     //All blocks needed for the game and their points are referenced here
-    public static LinkedHashMap<Material, Integer> blocksConfig = new LinkedHashMap<>();
+    public static LinkedHashMap<Material, Integer> blocksConfig;
     //List of all inventories containing blocks needed
-    public static ArrayList<blocksInventory> invBlocks = new ArrayList<>();
+    public static ArrayList<blocksInventory> invBlocks;
     //List of inventories in order to configure points of blocks
-    public static ArrayList<blockConfigInventory> invBlockConfig = new ArrayList<>();
+    public static ArrayList<blockConfigInventory> invBlockConfig;
     //Current page of invBlockConfig where players are currently. Usefull to know the next and previous page
-    public static HashMap<Player, Integer> currentConfigPage = new HashMap<>();
+    public static HashMap<Player, Integer> currentConfigPage;
     
     //Current page of invBlocks where players are currently. Usefull to know the next and previous page
-    public static HashMap<Player, Integer> currentBlocksPage = new HashMap<>();
+    public static HashMap<Player, Integer> currentBlocksPage;
     
-    public static ArrayList<Material> nonCompatible = new ArrayList<>();
+    public static ArrayList<Material> nonCompatible;
     
-    public static HashMap<String, Location> roomsLocations = new HashMap<>();
+    public static HashMap<String, Location> roomsLocations;
     
-    public static ItemStack compas = new ItemStack(Material.COMPASS);
+    public static ItemStack compas;
     
-    static {
+    public static void loadConfig() {
+        gamePhase = 0;
+        canClick = new ArrayList<>();
+        onInvConfig = new ArrayList<>();
+        team_freezed = false;
+        hostList = new ArrayList<>();
+        listTeams = new HashMap<>();
+        blocksConfig = new LinkedHashMap<>();
+        invBlocks = new ArrayList<>();
+        invBlockConfig = new ArrayList<>();
+        currentConfigPage = new HashMap<>();
+        currentBlocksPage = new HashMap<>();
+        nonCompatible = new ArrayList<>();
+        roomsLocations = new HashMap<>();
+        compas = new ItemStack(Material.COMPASS);
+        
+        
         listTeams.put("Bleu", new ArrayList<>());
         listTeams.put("Rouge", new ArrayList<>());
         listTeams.put("Vert", new ArrayList<>());
@@ -107,9 +123,6 @@ public class gameConfig {
         
         //Initialize inventories containig required blocks
         for(int k=0; k<5; k++) invBlocks.add(new blocksInventory());
-    }
-    
-    public static void loadConfig() {
         
         numberTeams = dataBase.getTeamsNumber();
         previousNumberTeams = dataBase.getPreviousTeamsNumber();

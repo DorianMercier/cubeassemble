@@ -3,6 +3,7 @@ package com.dorianmercier.cubeassemble.common;
 import com.dorianmercier.cubeassemble.inventories.*;
 import com.dorianmercier.cubeassemble.threads.scoreboard;
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -30,43 +31,60 @@ public final class main extends JavaPlugin {
     public static Team gray;
     public static Team cyan;
     public static Team host;
-
-    @Override
-    public void onEnable() {
-        log.info("onEnable has been invoked!");
+    
+    private static cubeAssembleCommandExecutor cmdEx;
+    private static events eventsHandler;
+    
+    //Inventories
+    private static setup setupInv;
+    private static setup_teams setup_teamsInv;
+    private static teams teamsInv;
+    private static blockMenue blockMenueInv;
+    
+    public void init() {
+        log.info("Initiallising plugin...");
         manager = Bukkit.getScoreboardManager();
         board = manager.getMainScoreboard();
         try {
             host = board.getTeam("host");
         }
-        catch(Exception e) {
+        catch(IllegalArgumentException e) {
             host = board.registerNewTeam("host");
         }
         
-        this.getCommand("init").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("clean").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("setup").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("test").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("ready").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("start").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("finish").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("reset").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("inv").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("save").setExecutor(new cubeAssembleCommandExecutor(this));
-        this.getCommand("giveCompass").setExecutor(new cubeAssembleCommandExecutor(this));
+        cmdEx = new cubeAssembleCommandExecutor(this);
+        
+        try {
+            this.getCommand("init").setExecutor(cmdEx);
+            this.getCommand("clean").setExecutor(cmdEx);
+            this.getCommand("setup").setExecutor(cmdEx);
+            this.getCommand("test").setExecutor(cmdEx);
+            this.getCommand("ready").setExecutor(cmdEx);
+            this.getCommand("start").setExecutor(cmdEx);
+            this.getCommand("finish").setExecutor(cmdEx);
+            this.getCommand("reset").setExecutor(cmdEx);
+            this.getCommand("inv").setExecutor(cmdEx);
+            this.getCommand("save").setExecutor(cmdEx);
+            this.getCommand("giveCompass").setExecutor(cmdEx);
+            this.getCommand("hardreset").setExecutor(cmdEx);
+        }
+        catch(Exception e) {
+            log.error("Error initialising commands");
+        }
         
         //Initializing inventories
-        new setup();
-        new setup_teams();
-        new teams();
-        new blockMenue();
+        setupInv = new setup();
+        setup_teamsInv = new setup_teams();
+        teamsInv = new teams();
+        blockMenueInv = new blockMenue();
         
         //Initalizing eventsHandlers
-        new events(this);
+        HandlerList.unregisterAll(this);
+        eventsHandler = new events(this);
         
         //Initializing teams
-        teamManager.initTeams();
         gameConfig.loadConfig();
+        teamManager.initTeams();
         
         //Creating config scoreboard
         config = board.getObjective("config");
@@ -96,7 +114,13 @@ public final class main extends JavaPlugin {
         if(gameConfig.gamePhase == 3 || gameConfig.gamePhase == 4) {
             scoreboard.start(this, board.getObjective("config").getScore("time").getScore());
         }
-      
+    
+        log.info("...plugin initialised");
+    }
+
+    @Override
+    public void onEnable() {
+        init();
     }
 
     @Override

@@ -346,6 +346,54 @@ public class dataBase {
         }
     }
     
+    public static void resetDatabase()  {
+        try {
+            PreparedStatement st = con.prepareStatement("delete from general_config");
+            st.execute();
+            st = con.prepareStatement("delete from teams");
+            st.execute();
+            st = con.prepareStatement("delete from players");
+            st.execute();
+            st = con.prepareStatement("delete from blocks");
+            st.execute();
+            st = con.prepareStatement("delete from start_inventory");
+            st.execute();
+            
+            st = con.prepareStatement("insert into teams values(default, 'Bleu', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into teams values(default, 'Rouge', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into teams values(default, 'Verst', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into teams values(default, 'Jaune', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into teams values(default, 'Orange', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into teams values(default, 'Rose', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into teams values(default, 'Noir', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into teams values(default, 'Gris', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into teams values(default, 'Cyan', 0)");
+            st.execute();
+            
+            st = con.prepareStatement("insert into general_config values('numberTeams', 2)");
+            st.execute();
+            st = con.prepareStatement("insert into general_config values('teamsFreezed', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into general_config values('previousNumberTeams', 2)");
+            st.execute();
+            st = con.prepareStatement("insert into general_config values('previousNumberItems', 0)");
+            st.execute();
+            st = con.prepareStatement("insert into general_config values('gamePhase', 0)");
+            st.execute();
+        }
+        catch(SQLException e) {
+            log.error("Database : Cannot reset database. Please use the script provided with the plugin.");
+        }
+    }
+    
     public static Inventory loadInventory() {
         Inventory inv = Bukkit.createInventory(null, InventoryType.PLAYER);
         

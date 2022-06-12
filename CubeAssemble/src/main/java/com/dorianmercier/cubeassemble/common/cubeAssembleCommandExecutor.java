@@ -37,6 +37,57 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
         
         World world = Bukkit.getWorld("world");
         
+        if(command.getName().equalsIgnoreCase("hardReset")) {
+            sender.sendMessage("This command is not implemented yet");
+            return true;
+            //Not working yet
+            /*
+            if(!scoreboard.runnable.isCancelled()) scoreboard.runnable.cancel();
+            Objective obj;
+            obj = main.board.getObjective("scores");
+            if(obj != null) obj.unregister();
+            obj = main.board.getObjective("scoreboard");
+            if(obj != null) obj.unregister();
+            obj = main.board.getObjective("lastX");
+            if(obj != null) obj.unregister();
+            obj = main.board.getObjective("lastY");
+            if(obj != null) obj.unregister();
+            obj = main.board.getObjective("lastZ");
+            if(obj != null) obj.unregister();
+            obj = main.board.getObjective("lastWorld");
+            if(obj != null) obj.unregister();
+            obj = main.board.getObjective("config");
+            if(obj != null) obj.unregister();
+            teamManager.resetTeams();
+            dataBase.resetDatabase();
+            main.manager = null;
+            main.board = null;
+            main.config = null;
+            main.lastX = null;
+            main.lastY = null;
+            main.lastZ = null;
+            main.lastWorld = null;
+            main.blue = null;
+            main.red = null;
+            main.green = null;
+            main.yellow = null;
+            main.orange = null;
+            main.pink = null;
+            main.black = null;
+            main.gray = null;
+            main.cyan = null;
+            main.host = null;
+            gameConfig.gamePhase = 0;
+            gameConfig.canClick = new ArrayList<>();
+            gameConfig.onInvConfig = new ArrayList<>();
+            blockRooms.reloadRooms(false);
+            spawn.build(false);
+            plugin.init();
+            return true;
+            */
+            
+        }
+        
         if(command.getName().equalsIgnoreCase("giveCompass")) {
             if(args.length != 1) return false;
             
@@ -87,7 +138,7 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
                 return true;
             }
             
-            if(world.setSpawnLocation(0,311,0)) {
+            if(world.setSpawnLocation(0,300,0)) {
                 log.info("World spawn changed successfully to 0 0");
             }
             else {
@@ -205,19 +256,20 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             Player playerSender = (Player) sender;
             playerSender.chat("/recipe give @a *");
             scoreboard.start(plugin);      
-            
+
             for(Player player : Bukkit.getOnlinePlayers()) {
                 if(gameConfig.playerLinkedTeam.containsKey(player.getName())) {
                     player.setGameMode(GameMode.SURVIVAL);
                     player.teleport(new Location(world, 0, 310, 0));
                     startInventory.assign(player);
                     gameConfig.giveCompas(player);
-                    main.lastY.getScore(player.getName()).setScore(-1);
+                    main.lastY.getScore(player.getName()).setScore(-80);
                 }
                 else {
                     player.setGameMode(GameMode.SPECTATOR);
                 }
             }
+            
             world.setTime(0);
             world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
             world.setClearWeatherDuration(0);
@@ -225,22 +277,15 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
             Bukkit.broadcastMessage("Début de la partie. Vous avez 30 secondes d'invulnérabilité");
             gameConfig.updateRoomsLocation();
             setGamePhase(3);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        Thread.sleep(30000);
-                        //If /finish has been called bebore, do not execute following lines
-                        if(gameConfig.gamePhase < 5) {
-                            Bukkit.broadcastMessage("Période d'invulnérabilité terminée.");
-                            setGamePhase(4);
-                        }
-                    }
-                    catch(InterruptedException e) {
-                        log.error("Thread error in start command : " + e);
+                    if(gameConfig.gamePhase == 3) {
+                        Bukkit.broadcastMessage("Période d'invulnérabilité terminée.");
+                        setGamePhase(4);
                     }
                 }
-            });
+            }, 20L * 30L);
         }
         if(command.getName().equalsIgnoreCase("finish")) {
             if(gameConfig.gamePhase < 3) {
@@ -311,4 +356,6 @@ public class cubeAssembleCommandExecutor implements CommandExecutor {
         setGamePhase(5);
         return true;
     }
+    
+    
 }

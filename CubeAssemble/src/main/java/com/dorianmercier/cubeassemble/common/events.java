@@ -5,7 +5,6 @@
  */
 package com.dorianmercier.cubeassemble.common;
 
-import static com.dorianmercier.cubeassemble.common.gameConfig.nonCompatible;
 import static com.dorianmercier.cubeassemble.common.gameConfig.setGamePhase;
 import com.dorianmercier.cubeassemble.inventories.blockMenue;
 import com.dorianmercier.cubeassemble.inventories.setup;
@@ -309,7 +308,7 @@ public class events implements Listener{
             e.setCancelled(true);
             if(e.getHand() == EquipmentSlot.HAND) return;
             String name = player.getName();
-            if(main.lastY.getScore(name).getScore() < 0) {
+            if(main.lastY.getScore(name).getScore() < -70) {
                 Location location = player.getLocation();
                 main.lastX.getScore(name).setScore(location.getBlockX());
                 main.lastY.getScore(name).setScore(location.getBlockY());
@@ -337,7 +336,7 @@ public class events implements Listener{
                 else world = Bukkit.getWorld("world_the_end");
                 
                 Location destination = new Location(world, main.lastX.getScore(name).getScore()+0.5, main.lastY.getScore(name).getScore(), main.lastZ.getScore(name).getScore()+0.5);
-                main.lastY.getScore(name).setScore(-10);
+                main.lastY.getScore(name).setScore(-80);
                 player.teleport(destination);
             }
         }
@@ -398,12 +397,16 @@ public class events implements Listener{
     
     @EventHandler
     public static void onClickEntity(PlayerInteractEntityEvent e) {
-        if(gameConfig.gamePhase == 4) {
+        if(gameConfig.gamePhase == 4 || gameConfig.gamePhase == 3) {
             Player player = e.getPlayer();
             Entity entity = e.getRightClicked();
             Location location = entity.getLocation();
             int x = (int) location.getX(), z = (int) location.getZ();
             if(entity instanceof ItemFrame && abs(x) < 160 && abs(z) < 160 && abs(location.getY()) > 310) {
+                if(player.getInventory().getItemInMainHand().equals(gameConfig.compas)) {
+                    e.setCancelled(true);
+                    return;
+                }
                 ItemFrame clickedFrame = (ItemFrame) entity;
                 if(clickedFrame.getItem().getType() != Material.AIR) return;
                 Material currentMaterial = player.getInventory().getItemInMainHand().getType();
@@ -450,6 +453,12 @@ public class events implements Listener{
     public static void onRespawnPlayer(PlayerRespawnEvent e) {
         if(gameConfig.gamePhase < 5 && gameConfig.gamePhase > 2) {
             gameConfig.giveCompas(e.getPlayer());
+            Location location = e.getRespawnLocation();
+            log.info("Respawn location: " + location.toString());
+            if(abs(location.getX()) < 160 && abs(location.getZ()) < 160 && location.getY() > 309) {
+                log.info("On rentre dans le if");
+                e.setRespawnLocation(getHighestSpawn());
+            }
         }
     }
     
@@ -472,6 +481,14 @@ public class events implements Listener{
         gameConfig.updateBlocksConfig();
         gameConfig.updateInventoriesBlocksConfig();
         gameConfig.canClick.remove(player);
+    }
+    
+    private static Location getHighestSpawn() {
+        Location location = new Location(Bukkit.getWorld("world"), 0, 300, 0);
+        while(location.getBlock().getType().equals(Material.AIR)) {
+            location = location.add(0, -1, 0);
+        }
+        return location;
     }
 }
 
